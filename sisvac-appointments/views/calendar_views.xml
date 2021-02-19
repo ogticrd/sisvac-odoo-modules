@@ -1,0 +1,104 @@
+<odoo>
+    <data>
+        <record id="sisvac_calendar_event_tree" model="ir.ui.view">
+            <field name="name">SISVAC Calendar Event Tree</field>
+            <field name="model">calendar.event</field>
+            <field name="arch" type="xml">
+                <tree string="Vaccionations">
+                    <field name="name" string="Appointment Number"/>
+                    <field name="patient_id"/>
+                    <field name="start"/>
+                    <field name="product_id"/>
+                    <field name="status"/>
+                </tree>
+            </field>
+        </record>
+        <record id="sisvac_calendar_event_form" model="ir.ui.view">
+            <field name="name">SISVAC Calendar Event Form</field>
+            <field name="model">calendar.event</field>
+            <field name="arch" type="xml">
+                <form string="Vaccionations">
+                    <sheet>
+                        <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                        <field name="res_model" invisible="1" />
+                        <field name="res_id" invisible="1" />
+                        <field name="attendee_status" invisible="1"/>
+                        <field name="active" invisible="1"/>
+                        <div class="oe_title">
+                            <label for="appointment_number"/>
+                            <h1>
+                                <field name="appointment_number"/>
+                            </h1>
+                        </div>
+                        <notebook>
+                            <page name="page_details" string="Vaccination Details">
+                                <group>
+                                    <group>
+                                        <field name="patient_id" attrs="{'required': 1}"/>
+                                        <field name="start" string="Starting at" attrs="{'required': 1}"/>
+                                    </group>
+                                    <group>
+                                        <field name="status"/>
+                                        <field name="product_id"/>
+                                        <field name="location"/>
+                                    </group>
+                                </group>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="sisvac_calendar_event_search" model="ir.ui.view">
+            <field name="name">SISVAC Calendar Event Search</field>
+            <field name="model">calendar.event</field>
+            <field name="arch" type="xml">
+                <search string="Vaccionations">
+                    <field name="name" string="Appointment Number"/>
+                    <field name="patient_id"/>
+                    <field name="product_id"/>
+                    <field name="status"/>
+
+                    <group expand="0" string="Group By">
+                        <filter string="Patient" name="patient" domain="[]" context="{'group_by': 'patient_id'}"/>
+                        <filter string="Vaccine" name="vaccine" domain="[]" context="{'group_by': 'product_id'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="action_sisvac_calendar_event" model="ir.actions.act_window">
+            <field name="name">Vaccionations</field>
+            <field name="res_model">calendar.event</field>
+            <field name="view_mode">tree,form,calendar</field>
+            <field name="search_view_id" ref="sisvac_calendar_event_search"/>
+        </record>
+
+        <record id="action_sisvac_calendar_event_tree" model="ir.actions.act_window.view">
+            <field name="act_window_id" ref="action_sisvac_calendar_event"/>
+            <field name="sequence" eval="2"/>
+            <field name="view_mode">tree</field>
+            <field name="view_id" ref="sisvac_calendar_event_tree"/>
+        </record>
+
+        <record id="action_sisvac_calendar_event_form" model="ir.actions.act_window.view">
+            <field name="act_window_id" ref="action_sisvac_calendar_event"/>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="sisvac_calendar_event_form"/>
+        </record>
+
+        <menuitem
+            id="sisvac_primary_menu_vaccination"
+            name="Vaccionations"
+            sequence="2"
+            web_icon="calendar,static/description/icon.png"/>
+        
+        <menuitem
+            id="sisvac_secondary_menu_vaccination"
+            name="Vaccionations"
+            sequence="2"
+            parent="sisvac_primary_menu_vaccination"
+            action="action_sisvac_calendar_event"/>
+    </data>
+</odoo>
