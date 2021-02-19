@@ -36,11 +36,16 @@
                                     <group>
                                         <field name="patient_id" attrs="{'required': 1}"/>
                                         <field name="start" string="Starting at" attrs="{'required': 1}"/>
+                                        <field name="status"/>
+                                        <field name="vaccinator_id"/>
+                                        <field name="product_id"/>
                                     </group>
                                     <group>
-                                        <field name="status"/>
-                                        <field name="product_id"/>
-                                        <field name="location"/>
+                                        <field name="location_id"/>
+                                        <field name="lots"/>
+                                        <field name="patient_firm"/>
+                                        <field name="got_symptoms"/>
+                                        <field name="symptoms"/>
                                     </group>
                                 </group>
                             </page>

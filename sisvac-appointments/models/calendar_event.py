@@ -18,6 +18,12 @@ class CalendarEvent(models.Model):
     dosis_number = fields.Integer(readonly=True)
     stock_move_id = fields.Many2one("stock.move", readonly=True)
     another_appointment_needed = fields.Boolean(readonly=True)
+    lots = fields.Char()
+    vaccinator_id = fields.Many2one("res.partner")
+    patient_firm = fields.Binary()
+    got_symptoms = fields.Boolean()
+    symptoms = fields.Text()
+    location_id = fields.Many2one("stock.location")
 
     @api.model
     def create(self, vals):
