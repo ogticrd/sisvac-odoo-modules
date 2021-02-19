@@ -9,7 +9,7 @@
                     <field name="patient_id"/>
                     <field name="start"/>
                     <field name="product_id"/>
-                    <field name="status"/>
+                    <field name="state"/>
                 </tree>
             </field>
         </record>
@@ -18,6 +18,10 @@
             <field name="model">calendar.event</field>
             <field name="arch" type="xml">
                 <form string="Vaccionations">
+                    <header>
+                        <button name="action_put_vaccine" string="Put vaccine" type="object" states="pending" icon="fa-medkit"/>
+                        <field name="state" widget="statusbar"/>
+                    </header>
                     <sheet>
                         <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
                         <field name="res_model" invisible="1" />
@@ -34,18 +38,19 @@
                             <page name="page_details" string="Vaccination Details">
                                 <group>
                                     <group>
-                                        <field name="patient_id" attrs="{'required': 1}"/>
-                                        <field name="start" string="Starting at" attrs="{'required': 1}"/>
-                                        <field name="status"/>
+                                        <field name="patient_id" 
+                                                attrs="{'required': 1, 'readonly': [('state', '=', 'done')]}"/>
+                                        <field name="start" string="Starting at" 
+                                                attrs="{'required': 1, 'readonly': [('state', '=', 'done')]}"/>
+                                        <field name="location_id" attrs="{'readonly': [('state', '=', 'done')]}"/>
                                         <field name="vaccinator_id"/>
-                                        <field name="product_id"/>
                                     </group>
                                     <group>
-                                        <field name="location_id"/>
+                                        <field name="product_id"/>
                                         <field name="lots"/>
                                         <field name="patient_firm"/>
                                         <field name="got_symptoms"/>
-                                        <field name="symptoms"/>
+                                        <field name="symptoms" attrs="{'invisible':[('got_symptoms','=', False)]}"/>
                                     </group>
                                 </group>
                             </page>
@@ -63,7 +68,7 @@
                     <field name="name" string="Appointment Number"/>
                     <field name="patient_id"/>
                     <field name="product_id"/>
-                    <field name="status"/>
+                    <field name="state"/>
 
                     <group expand="0" string="Group By">
                         <filter string="Patient" name="patient" domain="[]" context="{'group_by': 'patient_id'}"/>

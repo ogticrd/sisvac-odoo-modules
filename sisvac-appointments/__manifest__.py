@@ -1,7 +1,7 @@
 {
     'name': "SISVAC Appointments",
     'description': """
-        Long description of module's purpose
+        SISVAC Appointments
     """,
     'author': "OPTIC, Kevin Jiménez",
     'website': "http://optic.gob.do",
@@ -10,11 +10,12 @@
     'category': 'Uncategorized',
     'version': '0.1',
 
-    'depends': ['base', 'calendar', 'product'],
+    'depends': ['base', 'calendar', 'product', 'stock'],
 
     'data': [
+        'security/ir.model.access.csv',
         'data/data.xml',
         'views/calendar_views.xml',
-        'views/templates.xml',
+        'wizard/vaccination_wizard.xml',
     ]
 }

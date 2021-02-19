@@ -9,21 +9,21 @@ class CalendarEvent(models.Model):
     patient_id = fields.Many2one("res.partner")
     next_appointment_date = fields.Datetime(readonly=True)
     vaccination_appointment = fields.Boolean(readonly=True)
-    product_id = fields.Many2one("product.template", "Vaccine", domain=[("is_vaccine", "=", True)])
-    status = fields.Selection([
+    product_id = fields.Many2one("product.template", "Vaccine", readonly=True, domain=[("is_vaccine", "=", True)])
+    state = fields.Selection([
         ("pending", "Pending"),
         ("done", "Done"),
         ("canceled", "Canceled")
-    ], default="pending")
+    ], default="pending", readonly=True)
     dosis_number = fields.Integer(readonly=True)
     stock_move_id = fields.Many2one("stock.move", readonly=True)
     another_appointment_needed = fields.Boolean(readonly=True)
-    lots = fields.Char()
-    vaccinator_id = fields.Many2one("res.partner")
-    patient_firm = fields.Binary()
-    got_symptoms = fields.Boolean()
-    symptoms = fields.Text()
-    location_id = fields.Many2one("stock.location")
+    lots = fields.Char(readonly=True)
+    vaccinator_id = fields.Many2one("res.partner", readonly=True, domain=[("is_vaccinator", "=", True)])
+    patient_firm = fields.Binary(readonly=True)
+    got_symptoms = fields.Boolean("Got Symptoms?", readonly=True)
+    symptoms = fields.Text(readonly=True)
+    location_id = fields.Many2one("stock.location", domain="[('usage', '=', 'internal')]")
 
     @api.model
     def create(self, vals):
@@ -46,3 +46,14 @@ class CalendarEvent(models.Model):
             if current_appointments > 1:
                 raise ValidationError(_("This patient have another active vaccination appointment. \
                     \nEach patient only can have one active vaccination appointment."))
+
+    def action_put_vaccine(self):
+
+        return {
+            'name': _('Put Vaccine'),
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'sisvac.vaccination.wizard',
+            'target': 'new'
+        }
