@@ -5,7 +5,7 @@
             <field name="name">SISVAC Vaccination Wizard Form</field>
             <field name="model">sisvac.vaccination.wizard</field>
             <field name="arch" type="xml">
-                <form string="Vaccionations">
+                <form string="Vaccinations">
                     <group>
                         <group>
                             <field name="product_id"/>
