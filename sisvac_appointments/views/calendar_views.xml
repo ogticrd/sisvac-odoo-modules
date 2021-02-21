@@ -39,7 +39,6 @@
                                         attrs="{'required': 1, 'readonly': [('state', '=', 'done')]}"/>
                                 <field name="start" string="Starting at" 
                                         attrs="{'required': 1, 'readonly': [('state', '=', 'done')]}"/>
-                                <field name="location_id" attrs="{'readonly': [('state', '=', 'done')]}"/>
                                 <field name="vaccinator_id"/>
                             </group>
                             <group>
