@@ -10,7 +10,7 @@
     'category': 'Uncategorized',
     'version': '0.1',
 
-    'depends': ['base', 'calendar', 'product', 'stock'],
+    'depends': ['calendar'],
 
     'data': [
         'security/ir.model.access.csv',
