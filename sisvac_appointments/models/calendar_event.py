@@ -28,6 +28,23 @@ class CalendarEvent(models.Model):
     patient_image = fields.Binary("Patient photo", related="patient_id.image_1024")
     patient_vat = fields.Char(related="patient_id.vat")
 
+    def _get_appointment_data(self):
+        return {
+            "appointment_number": self.appointment_number,
+            "patient_id": {"id": self.patient_id.id, "name": self.patient_id.name},
+            "next_appointment_date": self.next_appointment_date,
+            "state": self.state,
+            "dose_number": self.dose_number,
+            "another_appointment_needed": self.another_appointment_needed,
+            "lots": self.lots,
+            "vaccinator_id": {
+                "id": self.vaccinator_id.id,
+                "name": self.vaccinator_id.name,
+            },
+            "symptoms": self.symptoms,
+            "patient_vat": self.patient_vat,
+        }
+
     @api.model
     def create(self, vals):
         if vals.get("appointment_number", "New") == "New":

@@ -1,1 +1,1 @@
-from . import stock_service
+from . import appointments_service
