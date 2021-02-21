@@ -8,7 +8,6 @@
                     <field name="name" string="Appointment Number"/>
                     <field name="patient_id"/>
                     <field name="start"/>
-                    <field name="product_id"/>
                     <field name="state"/>
                 </tree>
             </field>
@@ -34,7 +33,7 @@
                                 <field name="appointment_number"/>
                             </h1>
                         </div>
-                        <group>
+                        <group name="group_a">
                             <group>
                                 <field name="patient_id" 
                                         attrs="{'required': 1, 'readonly': [('state', '=', 'done')]}"/>
@@ -48,29 +47,12 @@
                                 <field name="patient_vat"/>
                             </group>
                         </group>
-                        <group>
+                        <group name="group_b">
                             <group>
-                                <field name="product_id"/>
-                                <field name="lots" attrs="{'invisible':[('product_id','=', False)]}"/>
-                                <field name="patient_firm"/>
-                                <field name="got_symptoms" attrs="{'invisible':[('product_id','=', False)]}"/>
-                                <field name="symptoms" attrs="{'invisible':['|', ('got_symptoms','=', False), ('product_id','=', False)]}"/>
-                            </group>
-                            <group>
-                                <field name="product_image" widget="image" options="{'size': [90, 90]}"/>
-                                <field name="product_dose_qty"/>
-                                <label for="product_time_between_dose"/>
-                                <div>
-                                    <field name="product_time_between_dose" style="width: 10% !important" class="oe_inline"/>
-                                    <span class="o_form_label" style="width: 2% !important">   </span> <!-- Make a little space. -->
-                                    <field name="product_unit_time_between_dose" style="width: 48% !important;" class="oe_inline"/>
-                                </div>
-                                <label for="product_frequency"/>
-                                <div>
-                                    <field name="product_frequency" style="width: 10% !important" class="oe_inline"/>
-                                    <span class="o_form_label" style="width: 2% !important">   </span> <!-- Make a little space. -->
-                                    <field name="product_unit_frequency" style="width: 48% !important;" class="oe_inline"/>
-                                </div>
+                                <field name="lots"/>
+                                <field name="patient_sign"/>
+                                <field name="got_symptoms"/>
+                                <field name="symptoms" attrs="{'invisible':[('got_symptoms','=', False)]}"/>
                             </group>
                         </group>
                     </sheet>
@@ -85,12 +67,10 @@
                 <search string="Vaccinations">
                     <field name="name" string="Appointment Number"/>
                     <field name="patient_id"/>
-                    <field name="product_id"/>
                     <field name="state"/>
 
                     <group expand="0" string="Group By">
                         <filter string="Patient" name="patient" domain="[]" context="{'group_by': 'patient_id'}"/>
-                        <filter string="Vaccine" name="vaccine" domain="[]" context="{'group_by': 'product_id'}"/>
                     </group>
                 </search>
             </field>
