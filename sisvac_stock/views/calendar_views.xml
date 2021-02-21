@@ -18,6 +18,7 @@
         <field name="arch" type="xml">
             <field name="start" position="after">
                 <field name="product_id"/>
+                <field name="location_id" attrs="{'readonly': [('state', '=', 'done')]}"/>
             </field>
             <field name="lots" position="before">
                 <field name="product_id"/>

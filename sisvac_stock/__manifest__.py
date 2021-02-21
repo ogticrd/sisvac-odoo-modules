@@ -8,7 +8,7 @@
     "data": [
         # 'security/ir.model.access.csv',
         "views/product_template.xml",
-        "views/vaccination_wizard_views.xml",
+        "wizard/vaccination_wizard_views.xml",
         "views/templates.xml",
     ],
 }
