@@ -13,7 +13,6 @@
         "security/ir.model.access.csv",
         "data/data.xml",
         "views/calendar_views.xml",
-        "views/product_template.xml",
         "wizard/vaccination_wizard.xml",
     ],
 }
