@@ -12,6 +12,13 @@ class AppointmentsService(Component):
         Appointments Related models API Services
     """
 
+    def get(self, _id):
+        appointment = self.env["calendar.event"].browse(_id)
+        return request.make_response(
+            json.dumps(appointment._get_appointment_data()),
+            headers=[("Content-Type", "application/json")],
+        )
+
     def search(self):
         appointments = self.env["calendar.event"].search(
             [("vaccination_appointment", "=", True)]
