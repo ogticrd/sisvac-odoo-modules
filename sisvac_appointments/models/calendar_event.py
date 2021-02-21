@@ -14,13 +14,13 @@ class CalendarEvent(models.Model):
         default="pending",
         readonly=True,
     )
-    dosis_number = fields.Integer(readonly=True)
+    dose_number = fields.Integer(readonly=True)
     another_appointment_needed = fields.Boolean(readonly=True)
     lots = fields.Char(readonly=True)
     vaccinator_id = fields.Many2one(
         "res.partner", readonly=True, domain=[("is_vaccinator", "=", True)]
     )
-    patient_firm = fields.Binary(readonly=True)
+    patient_sign = fields.Binary(readonly=True)
     got_symptoms = fields.Boolean("Got Symptoms?", readonly=True)
     symptoms = fields.Text(readonly=True)
 
