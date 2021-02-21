@@ -9,15 +9,31 @@ class CalendarEvent(models.Model):
     patient_id = fields.Many2one("res.partner")
     next_appointment_date = fields.Datetime(readonly=True)
     vaccination_appointment = fields.Boolean(readonly=True)
-    product_id = fields.Many2one("product.template", "Vaccine", domain=[("is_vaccine", "=", True)])
-    status = fields.Selection([
+    product_id = fields.Many2one("product.template", "Vaccine", readonly=True, domain=[("is_vaccine", "=", True)])
+    state = fields.Selection([
         ("pending", "Pending"),
         ("done", "Done"),
         ("canceled", "Canceled")
-    ], default="pending")
+    ], default="pending", readonly=True)
     dosis_number = fields.Integer(readonly=True)
     stock_move_id = fields.Many2one("stock.move", readonly=True)
     another_appointment_needed = fields.Boolean(readonly=True)
+    lots = fields.Char(readonly=True)
+    vaccinator_id = fields.Many2one("res.partner", readonly=True, domain=[("is_vaccinator", "=", True)])
+    patient_firm = fields.Binary(readonly=True)
+    got_symptoms = fields.Boolean("Got Symptoms?", readonly=True)
+    symptoms = fields.Text(readonly=True)
+    location_id = fields.Many2one("stock.location", domain="[('usage', '=', 'internal')]")
+
+    # Related
+    patient_image = fields.Binary("Patient photo", related="patient_id.image_1024")
+    patient_vat = fields.Char(related="patient_id.vat")
+    product_image = fields.Binary("Vaccine photo", related="product_id.image_1024")
+    product_dose_qty = fields.Integer("Dose Qty", related="product_id.dose_qty")
+    product_time_between_dose = fields.Integer("Time Between Dose", related="product_id.time_between_dose")
+    product_unit_time_between_dose = fields.Selection("Unit time between dose", related="product_id.unit_time_between_dose")
+    product_frequency = fields.Integer("Frequency", related="product_id.frequency")
+    product_unit_frequency = fields.Selection("Unit Frequency", related="product_id.unit_frequency")
 
     @api.model
     def create(self, vals):
@@ -31,7 +47,7 @@ class CalendarEvent(models.Model):
         for record in self:
             appointment_filter = [
                 ("vaccination_appointment", "=", True),
-                ("status", "=", "pending"),
+                ("state", "=", "pending"),
                 ("patient_id", "=", record.patient_id.id)
             ]
 
@@ -40,3 +56,14 @@ class CalendarEvent(models.Model):
             if current_appointments > 1:
                 raise ValidationError(_("This patient have another active vaccination appointment. \
                     \nEach patient only can have one active vaccination appointment."))
+
+    def action_put_vaccine(self):
+
+        return {
+            'name': _('Put Vaccine'),
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'res_model': 'sisvac.vaccination.wizard',
+            'target': 'new'
+        }
