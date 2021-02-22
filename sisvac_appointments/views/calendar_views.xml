@@ -51,7 +51,7 @@
                                 <field name="lots"/>
                                 <field name="patient_sign"/>
                                 <field name="got_symptoms"/>
-                                <field name="symptoms" attrs="{'invisible':[('got_symptoms','=', False)]}"/>
+                                <field name="symptoms_notes" attrs="{'invisible':[('got_symptoms','=', False)]}"/>
                             </group>
                         </group>
                     </sheet>

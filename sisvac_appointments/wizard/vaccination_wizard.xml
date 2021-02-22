@@ -12,7 +12,9 @@
                     </group>
                     <group>
                         <field name="got_symptoms"/>
-                        <field name="symptoms"
+                        <field name="symptom_ids" widget="many2many_tags"
+                               attrs="{'invisible':[('got_symptoms','=', False)]}"/>
+                        <field name="symptom_notes"
                                attrs="{'invisible':[('got_symptoms','=', False)]}"/>
                     </group>
                 </group>
