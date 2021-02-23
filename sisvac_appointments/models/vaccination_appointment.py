@@ -205,6 +205,7 @@ class VaccinationAppointment(models.Model):
             {
                 "state": "scheduled",
                 "name": self.env["ir.sequence"].sudo().next_by_code(seq_code),
+                "next_appointment_date": date_range[0],
                 "application_ids": [
                     (
                         0,
@@ -242,4 +243,22 @@ class VaccinationAppointment(models.Model):
             "res_id": application_id.id,
             "views": [(view_id, "form")],
             "target": "new",
+        }
+
+    def _get_appointment_data(self):
+        return {
+            "id": self.id,
+            "number": self.name,
+            "state": self.state,
+            "cedula": self.partner_id.vat,
+            "name": self.partner_id.name,
+            "date": fields.Date.to_string(self.next_appointment_date.date()),
+            "hour": self.next_appointment_date.hour,
+            "location": {
+                "id": self.location_id.id,
+                "name": self.location_id.name,
+            },
+            "dose": len(
+                self.application_ids.filtered(lambda ap: ap.state == "applied")
+            ),
         }
