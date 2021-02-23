@@ -106,7 +106,12 @@ class VaccinationAppointment(models.Model):
     )
 
     # Patient
-    partner_id = fields.Many2one("res.partner", string="Name", required=True)
+    partner_id = fields.Many2one(
+        "res.partner",
+        domain="[('sisvac_is_patient', '=', True)]",
+        string="Name",
+        required=True,
+    )
     patient_signature = fields.Binary()  # TODO: implement this stuff
     image_1920 = fields.Binary(related="partner_id.image_1920")
     birthdate_date = fields.Date(related="partner_id.birthdate_date")

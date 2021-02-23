@@ -20,6 +20,7 @@
         "data/ir_sequence_data.xml",
         "views/appointment_views.xml",
         "views/application_views.xml",
+        "views/partner_views.xml",
     ],
     'demo': [
         "demo/product_demo_data.xml",
