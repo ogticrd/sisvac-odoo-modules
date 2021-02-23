@@ -1,5 +1,4 @@
 import json
-from odoo import fields
 from odoo.http import request
 from odoo.addons.component.core import Component
 
