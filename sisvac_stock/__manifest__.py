@@ -11,4 +11,5 @@
         "wizard/vaccination_wizard_views.xml",
         "views/templates.xml",
     ],
+    "installable": False,
 }
