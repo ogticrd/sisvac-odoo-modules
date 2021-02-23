@@ -1,0 +1,80 @@
+<odoo>
+  <data>
+    <record id="sisvac_website_menu_vaccination" model="website.menu">
+      <field name="name">Vaccination Appointment</field>
+      <field name="url">/appointment</field>
+      <field name="parent_id" ref="website.main_menu"/>
+    </record>
+
+    <template id="sisvac_vaccination_website_form" name="Sisvac Vaccination Website Form">
+      <t t-call="website.layout">
+        <div id="wrap">
+          <div class="oe_structure">
+            <div class="container">
+              <form role="form" action="/" method="">
+                <input type="hidden" name="csrf_token" t-att-value="request.csrf_token()"/>
+                <div class="form-group">
+                  <label for="partner_vat" class="control-label">ID Card</label>
+                  <input type="text" name="partner_vat" t-att-value="partner_vat" id="partner_vat"
+                          class="form-control" placeholder="ID Card" required="required"/>
+                </div>
+                <div class="form-group">
+                  <label for="name" class="control-label">Name</label>
+                  <input type="text" name="name" t-att-value="name" id="name"
+                          class="form-control" placeholder="Name" required="required"/>
+                </div>
+                <div class="form-group">
+                  <label for="phone" class="control-label">Phone</label>
+                  <input type="text" name="phone" t-att-value="phone" id="phone"
+                          class="form-control" placeholder="Phone"/>
+                </div>
+                <div class="form-group">
+                  <label for="mobile" class="control-label">Mobile</label>
+                  <input type="text" name="mobile" t-att-value="mobile" id="mobile"
+                          class="form-control" placeholder="Mobile"/>
+                </div>
+                <div class="form-group">
+                  <label for="country_state" class="control-label">State</label>
+                  <select name="country_id" class="form-control">
+                      <option value=""></option>
+                      <t t-foreach="country_states" t-as="state" t-key="state.id">
+                          <option t-att-value="state.id">
+                              <t t-esc="state.name" />
+                          </option>
+                      </t>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="neighborhood" class="control-label">Neighborhood</label>
+                  <input type="text" name="neighborhood" t-att-value="neighborhood" id="neighborhood"
+                          class="form-control" placeholder="Neighborhood" required="required"/>
+                </div>
+                <div class="form-group">
+                  <label for="email" class="control-label">Email</label>
+                  <input type="text" name="email" t-att-value="email" id="email"
+                          class="form-control" placeholder="Email"/>
+                </div>
+                <div class="form-group">
+                  <label for="comorbidities" class="control-label">Comorbidities</label>
+                  <input type="text" name="comorbidities" t-att-value="comorbidities" id="comorbidities"
+                          class="form-control" placeholder="Comorbidities"/>
+                </div>
+                <div class="form-group">
+                  <label for="disability" class="control-label">Disability</label>
+                  <input type="text" name="disability" t-att-value="disability" id="disability"
+                          class="form-control" placeholder="Disability"/>
+                </div>
+                <div class="form-group">
+                  <label for="notes" class="control-label">Notes</label>
+                  <textarea name="notes" t-att-value="notes" id="notes"
+                          class="form-control" placeholder="Notes"/>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </t>
+    </template>
+  </data>
+</odoo>
