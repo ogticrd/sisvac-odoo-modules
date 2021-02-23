@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="sisvac_vaccine_astrazeneca" model="res.partner">
+        <field name="name">Vacunador 1</field>
+        <field name="sisvac_is_vaccinator" eval="True"/>
+    </record>
+
+</odoo>

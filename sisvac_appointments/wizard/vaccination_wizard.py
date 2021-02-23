@@ -5,25 +5,34 @@ class Vaccination(models.TransientModel):
     _name = "sisvac.vaccination.wizard"
     _description = "Vaccination Wizard"
 
-    lots = fields.Char()
-    vaccinator_id = fields.Many2one(
-        "res.partner", domain=[("is_vaccinator", "=", True)]
+    appointment_id = fields.Many2one(
+        "sisvac.vaccination.appointment",
+        string="Appointment",
+        required=True,
     )
-    got_symptoms = fields.Boolean("Got Symptoms?")
+    partner_id = fields.Many2one(
+        "res.partner",
+        string="Vaccinator",
+        required=True,
+        default=lambda self: self.env.user.partner_id.id,
+        domain="[('sisvac_is_vaccinator', '=', True)]",
+    )
+    application_date = fields.Datetime(default=fields.Datetime.now())
+    product_id = fields.Many2one("product.product", related="lot_id.product_id")
+    lot_id = fields.Many2one(
+        "stock.production.lot",
+        string="Lot",
+        domain="[('company_id', '=', company_id)]",
+        check_company=True,
+    )
     symptoms = fields.Text()
+    company_id = fields.Many2one(
+        "res.company",
+        string="Company",
+        required=True,
+        default=lambda self: self.env.company,
+    )
 
-    def _get_vaccination_data(self):
-        """Hook method to be extended on other modules"""
-        return {
-            "lots": self.lots,
-            "vaccinator_id": self.vaccinator_id.id,
-            "got_symptoms": self.got_symptoms,
-            "symptoms": self.symptoms,
-            "state": "done",
-        }
-
-    def put_vaccine(self):
+    def action_apply(self):
         self.ensure_one()
-        active_id = self._context.get("active_id")
-        appointment = self.env["calendar.event"].browse(active_id)
-        appointment.write(self._get_vaccination_data())
+        application_obj = self.env["sisvac.vaccine.application"]

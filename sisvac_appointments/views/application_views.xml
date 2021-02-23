@@ -1,14 +1,15 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <record id="sisvac_vaccination_wizard_form" model="ir.ui.view">
-        <field name="name">Vaccination Wizard Form</field>
-        <field name="model">sisvac.vaccination.wizard</field>
+
+    <record id="sisvac_vaccine_application_wizard_view" model="ir.ui.view">
+        <field name="name">sisvac.vaccine.application.wizard.view</field>
+        <field name="model">sisvac.vaccine.application</field>
         <field name="arch" type="xml">
             <form string="Vaccination Wizard">
                 <group>
                     <group>
                         <field name="company_id" attrs="{'invisible': True}"/>
-                        <field name="partner_id"/>
+                        <field name="medic_partner_id"/>
                         <field name="application_date"/>
                     </group>
                     <group>
@@ -18,11 +19,12 @@
                     <field name="symptoms"/>
                 </group>
                 <footer>
-                    <button name="action_record_application" type="object"
-                            string="Record Application" class="oe_highlight"/>
+                    <button name="apply" type="object"
+                            string="Validate" class="oe_highlight"/>
                     <button special="cancel" string="Cancel"/>
                 </footer>
             </form>
         </field>
     </record>
+
 </odoo>

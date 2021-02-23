@@ -1,42 +1,94 @@
-from odoo import fields, models, api, _
-from odoo.exceptions import ValidationError
+from odoo import fields, models, api
+from odoo.exceptions import UserError
 
 
 class VaccineApplication(models.Model):
     _name = "sisvac.vaccine.application"
     _description = "Vaccine Application"
     _order = "application_date"
+    _inherits = {"calendar.event": "event_id"}
 
+    event_id = fields.Many2one(
+        "calendar.event", string="Event", required=True, ondelete="cascade"
+    )
     appointment_id = fields.Many2one(
         "sisvac.vaccination.appointment",
         string="Appointment",
         required=True,
+        ondelete="cascade",
+    )
+    partner_id = fields.Many2one("res.partner", string="Patient", required=True)
+    medic_partner_id = fields.Many2one(
+        "res.partner",
+        string="Vaccinator",
+        domain="[('sisvac_is_vaccinator', '=', True)]",
     )
     application_date = fields.Datetime()
     state = fields.Selection(
         [("draft", "Draft"), ("scheduled", "Scheduled"), ("applied", "Applied")],
-        draft="draft",
+        default="draft",
         required=True,
     )
     product_id = fields.Many2one(
         "product.product",
-        related="appointment_id.product_id",
+        string="Vaccine",
         store=True,
         readonly=True,
     )
     lot_id = fields.Many2one(
         "stock.production.lot",
         string="Lot",
-        domain="[('product_id','=', product_id), ('company_id', '=', company_id)]",
+        domain="[('product_id', '=', product_id)]",
         check_company=True,
     )
-    symptoms = fields.Text(readonly=True)  # consider use M2M
+    symptoms = fields.Text()  # TODO: consider use M2M
     company_id = fields.Many2one(
         "res.company",
         string="Company",
         required=True,
         default=lambda self: self.env.company,
     )
+
+    @api.model
+    def create(self, vals):
+        if "appointment_id" in vals:
+            appointment = self.env["sisvac.vaccination.appointment"].browse(
+                vals["appointment_id"]
+            )
+            vals["name"] = appointment.name
+            vals["start"] = vals["application_date"]
+            vals["stop"] = vals["application_date"]
+
+        return super(VaccineApplication, self).create(vals)
+
+    def apply(self):
+        self.write(
+            {
+                "medic_partner_id": self.medic_partner_id.id,
+                "application_date": self.application_date,
+                "lot_id": self.lot_id.id,
+                "state": "applied",
+            }
+        )
+
+        application_id = self.search(
+            [
+                ("state", "=", "scheduled"),
+                ("appointment_id", "=", self.appointment_id.id),
+            ],
+            order="application_date desc",
+            limit=1,
+        )
+
+        self.appointment_id.write(
+            {
+                "last_appointment_date": self.application_date,
+                "next_appointment_date": application_id.application_date
+                if application_id
+                else False,
+                "state": "completed" if not application_id else application_id.state,
+            }
+        )
 
 
 class VaccinationAppointment(models.Model):
@@ -45,22 +97,36 @@ class VaccinationAppointment(models.Model):
     _inherit = "mail.thread"
     _order = "next_appointment_date, name"
 
-    name = fields.Char(required=True, string="Appointment Number")
-    patient_id = fields.Many2one("res.partner", string="Patient")
-    patient_signature = fields.Binary()
-    observations = fields.Text()
-    # patient_image = fields.Binary("Patient photo", related="patient_id.image_1024")
-    # patient_vat = fields.Char(related="patient_id.vat")
-    vaccinator_id = fields.Many2one(
-        "res.partner", string="Vaccinator", domain=[("is_vaccinator", "=", True)]
+    name = fields.Char(
+        string="Appointment Number",
+        required=True,
+        readonly=True,
+        default="Draft",
+        copy=False,
     )
-    last_appointment_date = fields.Datetime()
-    next_appointment_date = fields.Datetime()
-    current_application_id = fields.Many2one(
-        "sisvac.vaccine.application", string="Current Application", required=True
+
+    # Patient
+    partner_id = fields.Many2one("res.partner", string="Name", required=True)
+    patient_signature = fields.Binary()  # TODO: implement this stuff
+    image_1920 = fields.Binary(related="partner_id.image_1920")
+    birthdate_date = fields.Date(related="partner_id.birthdate_date")
+    age = fields.Integer(related="partner_id.age")
+    gender = fields.Selection(related="partner_id.gender")
+    age_range_id = fields.Many2one(
+        "res.partner.age.range", related="partner_id.age_range_id"
     )
+    observations = fields.Text(copy=False)
+
+    # Appointment
+    first_appointment_date = fields.Datetime(
+        required=True, states={"draft": [("required", False)]}
+    )
+    last_appointment_date = fields.Datetime(readonly=True, copy=False)
+    next_appointment_date = fields.Datetime(readonly=True, copy=False)
     application_ids = fields.One2many(
-        "sisvac.vaccine.application", "appointment_id", string="Vaccine Applications"
+        "sisvac.vaccine.application",
+        "appointment_id",
+        string="Vaccine Applications",
     )
     state = fields.Selection(
         [
@@ -71,10 +137,23 @@ class VaccinationAppointment(models.Model):
         ],
         default="draft",
         required=True,
+        copy=False,
     )
-    product_id = fields.Many2one("product.product", string="Vaccine", required=True)
+    product_id = fields.Many2one(
+        "product.product",
+        string="Vaccine",
+        domain="[('sisvac_is_vaccine', '=', True)]",
+        required=True,
+    )
     location_id = fields.Many2one(
-        "stock.location", string="Vaccination Center", required=True, check_company=True
+        "stock.location",
+        string="Vaccination Center",
+        check_company=True,
+        required=True,
+    )
+    show_vaccine_wizard_button = fields.Boolean(
+        compute="_compute_show_vaccine_wizard_button",
+        store=True,
     )
     company_id = fields.Many2one(
         "res.company",
@@ -83,85 +162,79 @@ class VaccinationAppointment(models.Model):
         default=lambda self: self.env.company,
     )
 
+    @api.depends("state")
+    def _compute_show_vaccine_wizard_button(self):
+        for apt in self:
+            apt.show_vaccine_wizard_button = bool(
+                apt.application_ids.filtered(lambda app: app.state == "scheduled")
+            )
 
-# class CalendarEvent(models.Model):
-#     _inherit = "calendar.event"
-#
-#     appointment_number = fields.Char(readonly=True, default="New")
-#     patient_id = fields.Many2one("res.partner")
-#     next_appointment_date = fields.Datetime(readonly=True)
-#     vaccination_appointment = fields.Boolean(readonly=True)
-#     state = fields.Selection(
-#         [("pending", "Pending"), ("done", "Done"), ("canceled", "Canceled")],
-#         default="pending",
-#         readonly=True,
-#     )
-#     dose_number = fields.Integer(readonly=True)
-#     another_appointment_needed = fields.Boolean(readonly=True)
-#     lots = fields.Char(readonly=True)
-#     vaccinator_id = fields.Many2one(
-#         "res.partner", readonly=True, domain=[("is_vaccinator", "=", True)]
-#     )
-#     patient_sign = fields.Binary(readonly=True)
-#     got_symptoms = fields.Boolean("Got Symptoms?", readonly=True)
-#     symptoms = fields.Text(readonly=True)
-#
-#     # Related
-#     patient_image = fields.Binary("Patient photo", related="patient_id.image_1024")
-#     patient_vat = fields.Char(related="patient_id.vat")
-#
-#     def _get_appointment_data(self):
-#         return {
-#             "appointment_number": self.appointment_number,
-#             "patient_id": {"id": self.patient_id.id, "name": self.patient_id.name},
-#             "next_appointment_date": self.next_appointment_date,
-#             "state": self.state,
-#             "dose_number": self.dose_number,
-#             "another_appointment_needed": self.another_appointment_needed,
-#             "lots": self.lots,
-#             "vaccinator_id": {
-#                 "id": self.vaccinator_id.id,
-#                 "name": self.vaccinator_id.name,
-#             },
-#             "symptoms": self.symptoms,
-#             "patient_vat": self.patient_vat,
-#         }
-#
-#     @api.model
-#     def create(self, vals):
-#         if vals.get("appointment_number", "New") == "New":
-#             vals["appointment_number"] = (
-#                 self.env["ir.sequence"].next_by_code("sisvac.appointment") or "/"
-#             )
-#             vals["name"] = vals["appointment_number"]
-#         return super(CalendarEvent, self).create(vals)
-#
-#     @api.constrains("patient_id", "status", "vaccination_appointment")
-#     def _check_sigle_active_appointment(self):
-#         for record in self:
-#             appointment_filter = [
-#                 ("vaccination_appointment", "=", True),
-#                 ("state", "=", "pending"),
-#                 ("patient_id", "=", record.patient_id.id),
-#             ]
-#
-#             current_appointments = self.search_count(appointment_filter)
-#
-#             if current_appointments > 1:
-#                 raise ValidationError(
-#                     _(
-#                         "This patient have another active vaccination appointment. \
-#                     \nEach patient only can have one active vaccination appointment."
-#                     )
-#                 )
-#
-#     def action_put_vaccine(self):
-#
-#         return {
-#             "name": _("Put Vaccine"),
-#             "type": "ir.actions.act_window",
-#             "view_type": "form",
-#             "view_mode": "form",
-#             "res_model": "sisvac.vaccination.wizard",
-#             "target": "new",
-#         }
+    def _get_next_appointment_date(self, start_date, interval, time_unit):
+        if time_unit in ("days", "weeks"):
+            return fields.Datetime.add(
+                start_date, days=interval * 7 if time_unit == "weeks" else interval
+            )
+        elif time_unit == "months":
+            return fields.Datetime.add(start_date, months=interval)
+        else:
+            return fields.Datetime.add(start_date, years=interval)
+
+    def action_confirm_appointment(self):
+
+        date_range = []
+        for i in range(self.product_id.sisvac_dose_interval):
+            date = self.first_appointment_date if i == 0 else date_range[-1]
+            date_range.append(
+                self._get_next_appointment_date(
+                    date,
+                    self.product_id.sisvac_dose_interval,
+                    self.product_id.sisvac_unit_time_between_dose,
+                )
+            )
+
+        if not date_range:
+            raise UserError("%s vaccine has no dose interval" % self.product_id.name)
+
+        seq_code = "sisvac.appointment"
+        self.write(
+            {
+                "state": "scheduled",
+                "name": self.env["ir.sequence"].sudo().next_by_code(seq_code),
+                "application_ids": [
+                    (
+                        0,
+                        0,
+                        {
+                            "partner_id": self.partner_id.id,
+                            "application_date": date,
+                            "state": "scheduled",
+                            "product_id": self.product_id.id,
+                        },
+                    )
+                    for date in date_range
+                ],
+            }
+        )
+
+    def action_apply_vaccine_wizard(self):
+        application_id = self.env["sisvac.vaccine.application"].search(
+            [("state", "=", "scheduled"), ("appointment_id", "=", self.id)],
+            order="application_date desc",
+            limit=1,
+        )
+        if not application_id:
+            raise UserError("Not pending vaccine application found.")
+
+        view_id = self.env.ref(
+            "sisvac_appointments.sisvac_vaccine_application_wizard_view"
+        ).id
+
+        return {
+            "type": "ir.actions.act_window",
+            "name": "Apply Vaccine",
+            "res_model": "sisvac.vaccine.application",
+            "view_mode": "form",
+            "res_id": application_id.id,
+            "views": [(view_id, "form")],
+            "target": "new",
+        }
