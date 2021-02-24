@@ -23,7 +23,7 @@ class VaccinationConsent(models.Model):
     is_medicated = fields.Boolean()
     had_transplants = fields.Boolean()
 
-    def _get_consent_date(self):
+    def _get_consent_data(self):
         return {
             "id": self.id,
             "cedula": self.partner_id.vat,

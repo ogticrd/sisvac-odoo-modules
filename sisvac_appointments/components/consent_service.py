@@ -1,5 +1,5 @@
 import json
-from odoo.http import request
+from odoo.http import request, Response
 from odoo.addons.component.core import Component
 
 
@@ -15,7 +15,7 @@ class ConsentService(Component):
     def get(self, _id):
         consent = self.env["sisvac.vaccination.consent"].browse(_id)
         return request.make_response(
-            json.dumps(consent._get_consent_date()),
+            json.dumps(consent._get_consent_data()),
             headers=[("Content-Type", "application/json")],
         )
 
@@ -27,6 +27,57 @@ class ConsentService(Component):
         else:
             consents = consent_obj.search([])
         return request.make_response(
-            json.dumps([c._get_consent_date() for c in consents]),
+            json.dumps([c._get_consent_data() for c in consents]),
+            headers=[("Content-Type", "application/json")],
+        )
+
+    def create(self):
+        params = self.work.request.params
+        if "cedula" not in params:
+            return Response(
+                "Error. cedula param is required for consent create", status="400"
+            )
+
+        Partner = self.env["res.partner"]
+        vat = params["cedula"]
+        partner_id = Partner.search([("vat", "=", vat)], limit=1)
+        if not partner_id:
+            partner_id = Partner.create({"name": params.get("name"), "vat": vat})
+
+        consent_id = self.env["sisvac.vaccination.consent"].create(
+            {
+                "partner_id": partner_id.id,
+                "patient_signature": params.get("patient_signature", False)
+                if params.get("patient_signature", False) == "true"
+                else False,
+                "has_covid": params.get("has_covid", False)
+                if params.get("has_covid", False) == "true"
+                else False,
+                "is_pregnant": params.get("is_pregnant", False)
+                if params.get("is_pregnant", False) == "true"
+                else False,
+                "had_fever": params.get("had_fever", False)
+                if params.get("had_fever", False) == "true"
+                else False,
+                "is_vaccinated": params.get("is_vaccinated", False)
+                if params.get("is_vaccinated", False) == "true"
+                else False,
+                "had_reactions": params.get("had_reactions", False)
+                if params.get("had_reactions", False) == "true"
+                else False,
+                "is_allergic": params.get("is_allergic", False)
+                if params.get("is_allergic", False) == "true"
+                else False,
+                "is_medicated": params.get("is_medicated", False)
+                if params.get("is_medicated", False) == "true"
+                else False,
+                "had_transplants": params.get("had_transplants", False)
+                if params.get("had_transplants", False) == "true"
+                else False,
+            }
+        )
+
+        return request.make_response(
+            json.dumps(consent_id._get_consent_data()),
             headers=[("Content-Type", "application/json")],
         )
