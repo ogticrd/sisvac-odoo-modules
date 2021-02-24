@@ -43,6 +43,7 @@ class VaccineApplication(models.Model):
     )
     symptom_ids = fields.Many2many("sisvac.symptom")
     symptom_notes = fields.Text()
+    consent_id = fields.Many2one("sisvac.vaccination.consent", string="Consent")
     company_id = fields.Many2one(
         "res.company",
         string="Company",

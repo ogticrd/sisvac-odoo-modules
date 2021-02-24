@@ -23,6 +23,7 @@
         "views/application_views.xml",
         "views/partner_views.xml",
         "views/symptom_views.xml",
+        "views/consent_views.xml",
     ],
     "demo": [
         "demo/product_demo_data.xml",
