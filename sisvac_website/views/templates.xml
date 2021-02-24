@@ -1,0 +1,292 @@
+<odoo>
+  <data>
+    <record id="sisvac_website_menu_vaccination" model="website.menu">
+      <field name="name">Vaccination Appointment</field>
+      <field name="url">/appointment</field>
+      <field name="parent_id" ref="website.main_menu"/>
+    </record>
+
+    <template id="sisvac_vaccination_website_form" name="Sisvac Vaccination Website Form">
+      <t t-call="website.layout">
+        <section class="s_banner pb96 o_colored_level parallax s_parallax_is_fixed s_parallax_no_overflow_hidden pt48 o_half_screen_height" data-scroll-background-ratio="1" data-snippet="s_banner" data-name="Banner" style="" data-original-id="2675" data-original-src="/web/image/2675-3ea35814/fondopeople-07.png" data-mimetype="image/png" data-resize-width="1920">
+          <span class="s_parallax_bg oe_img_bg" style="background-image: url(&quot;/web/image/2722-a5a96f04/fondopeople-07.png&quot;);"/>
+          <div class="o_container_small">
+            <div class="row s_nb_column_fixed">
+              <div class="jumbotron rounded o_cc o_cc1 pt32 o_colored_level pb240 col-lg-12" data-name="Box" style="">
+                <h1 style="text-align: center; ">
+                  <img class="img-fluid o_we_custom_image" src="/web/image/1424-56aed194/Logo_poblacion.png" alt="" data-original-id="1424" data-original-src="/web/image/1424-56aed194/Logo_poblacion.png" data-mimetype="image/png" data-original-title="" title="" aria-describedby="tooltip556891" style="width: 25%;" loading="lazy"/>
+                  <br/>
+                  <span style="color: rgb(0, 23, 51); font-size: 36px;">¡Se el primero en vacunarte!</span>
+                </h1>
+                <p class="lead" style="text-align: center;">
+                  <span style="text-align: left; white-space: pre-wrap;">Pre-registrate y pronto te informaremos cómo realizar </span>
+                  <br/>
+                  <span style="text-align: left; white-space: pre-wrap;">la cita para vacunación.</span>
+                  <br/>
+                </p>
+                <section class="s_website_form pt16 pb16 o_colored_level" data-vcss="001" data-snippet="s_website_form" data-name="Form" style="">
+                  <div class="container">
+                    <form role="form" action="/sisvac/update_patient/" method="POST" class="patient_form">
+                      <div class="form-group s_website_form_field col-12">
+
+                        <div class="row s_col_no_resize s_col_no_bgcolor">
+                          <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="partner_vat">
+                            <span class="s_website_form_label_content">Cédula</span>
+                            <span class="s_website_form_mark"> *</span>
+                          </label>
+                          <div class="col-sm">
+                            <input type="text" class="form-control s_website_form_input" name="partner_vat" required="1" placeholder="" id="partner_vat"/>
+                            <input type="hidden" name="vat" t-att-value="vat" id="vat"/> 
+                          </div>
+                        </div>
+
+                      </div>
+                      <div class="d-none form_body">
+
+                        <p class="lead" style="text-align: center; margin: 1em 0;">
+                          <span style="text-align: left;">
+                            Bienvenido <span id="welcome_name" style="font-weight: bold;"></span>.<br/> 
+                            Favor suministrar estas importantes informaciones.
+                          </span>
+                          <br/>
+                        </p>
+
+                        <div class="form-group s_website_form_field col-12">
+                          <div class="row s_col_no_resize s_col_no_bgcolor">
+                            <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="phone">
+                              <span class="s_website_form_label_content">Teléfono</span>
+                            </label>
+                            <div class="col-sm">
+                              <input type="text" class="form-control s_website_form_input" name="phone" id="phone" placeholder=""/>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="form-group s_website_form_field col-12">
+                          <div class="row s_col_no_resize s_col_no_bgcolor">
+                            <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="mobile">
+                              <span class="s_website_form_label_content">Celular</span>
+                            </label>
+                            <div class="col-sm">
+                              <input type="text" class="form-control s_website_form_input" name="mobile" id="mobile" placeholder=""/>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="form-group s_website_form_field col-12">
+                          <div class="row s_col_no_resize s_col_no_bgcolor">
+                            <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="email">
+                              <span class="s_website_form_label_content">Email</span>
+                            </label>
+                            <div class="col-sm">
+                              <input type="text" class="form-control s_website_form_input" name="email" id="email" placeholder=""/>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="form-group s_website_form_field col-12">
+                          <div class="row s_col_no_resize s_col_no_bgcolor">
+                            <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="city">
+                              <span class="s_website_form_label_content">Sector</span>
+                            </label>
+                            <div class="col-sm">
+                              <input type="text" class="form-control s_website_form_input" name="city" id="city" placeholder=""/>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="form-group s_website_form_field col-12">
+                          <div class="row s_col_no_resize s_col_no_bgcolor">
+                            <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="state_id">
+                              <span class="s_website_form_label_content">Provincia</span>
+                            </label>
+                            <div class="col-sm">
+                              <select name="state_id" class="form-control">
+                                <option value=""></option>
+                                <t t-foreach="country_states" t-as="state" t-key="state.id">
+                                  <option t-att-value="state.id">
+                                    <t t-esc="state.name" />
+                                  </option>
+                                </t>
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="form-group s_website_form_field col-12">
+                          <div class="row s_col_no_resize s_col_no_bgcolor">
+                            <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="disability">
+                              <span class="s_website_form_label_content">Discapacitado</span>
+                            </label>
+                            <div class="col-sm">
+                              <input type="checkbox" class="form-control s_website_form_input" name="disability" id="disability"
+                                      style="width: auto;"/>
+                            </div>
+                          </div>
+                        </div>
+
+                        <p>Comorbilidades</p>
+
+                        <div class="form-group s_website_form_field col-12">
+                          <div class="row s_col_no_resize s_col_no_bgcolor">
+                            <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="city">
+                              <span class="s_website_form_label_content">Hipertensión</span>
+                            </label>
+                            <div class="col-sm">
+                              <input type="checkbox" class="form-control s_website_form_input" name="disability" id="disability"
+                                      style="width: auto;"/>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div class="form-group s_website_form_field col-12">
+                          <div class="row s_col_no_resize s_col_no_bgcolor">
+                            <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="city">
+                              <span class="s_website_form_label_content">Diabetes</span>
+                            </label>
+                            <div class="col-sm">
+                              <input type="checkbox" class="form-control s_website_form_input" name="disability" id="disability"
+                                      style="width: auto;"/>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div class="form-group s_website_form_field col-12">
+                          <div class="row s_col_no_resize s_col_no_bgcolor">
+                            <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="city">
+                              <span class="s_website_form_label_content">Obesidad</span>
+                            </label>
+                            <div class="col-sm">
+                              <input type="checkbox" class="form-control s_website_form_input" name="disability" id="disability"
+                                      style="width: auto;"/>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div class="form-group s_website_form_field col-12">
+                          <div class="row s_col_no_resize s_col_no_bgcolor">
+                            <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="city">
+                              <span class="s_website_form_label_content">Asma</span>
+                            </label>
+                            <div class="col-sm">
+                              <input type="checkbox" class="form-control s_website_form_input" name="disability" id="disability"
+                                      style="width: auto;"/>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div class="form-group s_website_form_field col-12">
+                          <div class="row s_col_no_resize s_col_no_bgcolor">
+                            <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="city">
+                              <span class="s_website_form_label_content">Enfermades Cardiovasculares</span>
+                            </label>
+                            <div class="col-sm">
+                              <input type="checkbox" class="form-control s_website_form_input" name="disability" id="disability"
+                                      style="width: auto;"/>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        <div class="form-group s_website_form_field col-12">
+                          <div class="row s_col_no_resize s_col_no_bgcolor">
+                            <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="city">
+                              <span class="s_website_form_label_content">Insuficiencia Renal</span>
+                            </label>
+                            <div class="col-sm">
+                              <input type="checkbox" class="form-control s_website_form_input" name="disability" id="disability"
+                                      style="width: auto;"/>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="form-group s_website_form_field col-12">
+                          <div class="row s_col_no_resize s_col_no_bgcolor">
+                            <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="notes">
+                              <span class="s_website_form_label_content">Notas</span>
+                            </label>
+                            <div class="col-sm">
+                              <textarea class="form-control s_website_form_input" name="notes" id="notes" placeholder=""/>
+                            </div>
+                          </div>
+                        </div>
+
+                        <p>Contacto de emergencia</p>
+
+                        <div class="form-group s_website_form_field col-12">
+                          <div class="row s_col_no_resize s_col_no_bgcolor">
+                            <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="contact_name">
+                              <span class="s_website_form_label_content">Nombre</span>
+                            </label>
+                            <div class="col-sm">
+                              <input type="text" class="form-control s_website_form_input" name="contact_name" id="contact_name" placeholder=""/>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="form-group s_website_form_field col-12">
+                          <div class="row s_col_no_resize s_col_no_bgcolor">
+                            <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="contact_name">
+                              <span class="s_website_form_label_content">Cédula</span>
+                            </label>
+                            <div class="col-sm">
+                              <input type="text" class="form-control s_website_form_input" name="contact_name" id="contact_name" placeholder=""/>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="form-group s_website_form_field col-12">
+                          <div class="row s_col_no_resize s_col_no_bgcolor">
+                            <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="contact_name">
+                              <span class="s_website_form_label_content">Teléfono</span>
+                            </label>
+                            <div class="col-sm">
+                              <input type="text" class="form-control s_website_form_input" name="contact_name" id="contact_name" placeholder=""/>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="form-group s_website_form_field col-12">
+                          <div class="row s_col_no_resize s_col_no_bgcolor">
+                            <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="contact_relationship">
+                              <span class="s_website_form_label_content">Parentesco</span>
+                            </label>
+                            <div class="col-sm">
+                              <select name="contact_relationship" class="form-control">
+                                <option value=""></option>
+                                <option value="">Abuelo/Abuela</option>
+                                <option value="">Padre/Madre</option>
+                                <option value="">Tio/Tia</option>
+                                <option value="">Esposo/Esposa</option>
+                                <option value="">Suegro/Suegra</option>
+                                <option value="">Hermano/Hermana</option>
+                                <option value="">Hijo/Hija</option>
+                                <option value="">Nieto/Nieta</option>
+                                <option value="">Sobrino/Sobrina</option>
+                                <option value="">Hijastro/Hijastra</option>
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="form-group col-12">
+                          <button type="submit" class="btn btn-lg btn-primary o_website_form_send">Registrarme</button>
+                          <span id="o_website_form_result"></span> 
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </section>
+              </div>
+            </div>
+          </div>
+        </section>
+      </t>
+    </template>
+
+    <template id="assets_frontend" name="sisvac_website_assets" inherit_id="web.assets_frontend">
+        <xpath expr="." position="inside">
+            <script type="text/javascript" src="/sisvac_website/static/src/js/forms.js"></script>
+        </xpath>
+    </template>
+  </data>
+</odoo>

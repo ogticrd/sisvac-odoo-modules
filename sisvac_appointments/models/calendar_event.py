@@ -22,7 +22,7 @@ class CalendarEvent(models.Model):
     )
     patient_sign = fields.Binary(readonly=True)
     got_symptoms = fields.Boolean("Got Symptoms?", readonly=True)
-    symptoms = fields.Text(readonly=True)
+    symptoms_notes = fields.Text(readonly=True)
 
     # Related
     patient_image = fields.Binary("Patient photo", related="patient_id.image_1024")

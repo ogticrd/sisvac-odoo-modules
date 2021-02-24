@@ -13,6 +13,8 @@
         "security/ir.model.access.csv",
         "data/data.xml",
         "views/calendar_views.xml",
+        "views/res_partner.xml",
+        "views/symptoms.xml",
         "wizard/vaccination_wizard.xml",
     ],
 }

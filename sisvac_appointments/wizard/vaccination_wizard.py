@@ -10,7 +10,8 @@ class Vaccination(models.TransientModel):
         "res.partner", domain=[("is_vaccinator", "=", True)]
     )
     got_symptoms = fields.Boolean("Got Symptoms?")
-    symptoms = fields.Text()
+    symptom_notes = fields.Text()
+    symptom_ids = fields.Many2many("sisvac.symptom")
 
     def _get_vaccination_data(self):
         """Hook method to be extended on other modules"""
