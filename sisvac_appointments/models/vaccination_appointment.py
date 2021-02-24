@@ -110,6 +110,7 @@ class VaccineApplication(models.Model):
             )
             if self.appointment_id.next_appointment_date
             else False,
+            "simptoms": [{"id": s.id, "name": s.name} for s in self.symptom_ids]
         }
 
 
