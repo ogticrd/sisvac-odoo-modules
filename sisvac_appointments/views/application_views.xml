@@ -28,4 +28,42 @@
         </field>
     </record>
 
+    <record id="sisvac_vaccine_application_tree_view" model="ir.ui.view">
+        <field name="name">sisvac.vaccine.application.tree.view</field>
+        <field name="model">sisvac.vaccine.application</field>
+        <field name="arch" type="xml">
+            <tree create="false" import="false" delete="false">
+                <field name="partner_id"/>
+                <field name="medic_partner_id"/>
+                <field name="application_date"/>
+                <field name="state"/>
+                <field name="product_id"/>
+                <field name="lot_id"/>
+                <field name="symptom_ids"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="sisvac_application_action" model="ir.actions.act_window">
+        <field name="name">Vaccine Application</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">sisvac.vaccine.application</field>
+        <field name="view_mode">tree</field>
+        <!--<field name="search_view_id" ref="sisvac_calendar_event_search"/>-->
+    </record>
+    <record id="sisvac_application_action_tree" model="ir.actions.act_window.view">
+        <field name="sequence" eval="0"/>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="sisvac_vaccine_application_tree_view"/>
+        <field name="act_window_id" ref="sisvac_application_action"/>
+    </record>
+
+    <menuitem
+        id="sisvac_application_menu"
+        name="Vaccine Applications"
+        sequence="40"
+        parent="sisvac_appointments.vaccination_appointment_menu_root"
+        action="sisvac_application_action"
+    />
+
 </odoo>
