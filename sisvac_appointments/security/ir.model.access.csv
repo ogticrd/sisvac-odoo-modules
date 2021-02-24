@@ -1,3 +1,4 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_sisvac_vaccine_application,access_sisvac_vaccine_application,model_sisvac_vaccine_application,base.group_user,1,1,1,1
 access_sisvac_vaccination_appointment,access_sisvac_vaccination_appointment,model_sisvac_vaccination_appointment,base.group_user,1,1,1,1
+sisvac_symptom,sisvac_symptom,model_sisvac_symptom,,1,1,1,1

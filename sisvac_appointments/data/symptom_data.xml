@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="sisvac_symptom_pain" model="sisvac.symptom">
+        <field name="name">Dolor</field>
+    </record>
+    <record id="sisvac_symptom_swelling" model="sisvac.symptom">
+        <field name="name">Sudoración</field>
+    </record>
+    <record id="sisvac_symptom_fever" model="sisvac.symptom">
+        <field name="name">Fiebre</field>
+    </record>
+    <record id="sisvac_symptom_chills" model="sisvac.symptom">
+        <field name="name">Escalofrios</field>
+    </record>
+    <record id="sisvac_symptom_tiredness" model="sisvac.symptom">
+        <field name="name">Cansancio</field>
+    </record>
+    <record id="sisvac_symptom_headache" model="sisvac.symptom">
+        <field name="name">Dolor de cabeza</field>
+    </record>
+    <record id="sisvac_symptom_nausea" model="sisvac.symptom">
+        <field name="name">Nausea</field>
+    </record>
+    <record id="sisvac_symptom_dizziness" model="sisvac.symptom">
+        <field name="name">Mareo</field>
+    </record>
+    <record id="sisvac_symptom_other" model="sisvac.symptom">
+        <field name="name">Otros</field>
+    </record>
+
+</odoo>

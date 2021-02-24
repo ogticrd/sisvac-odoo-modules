@@ -18,11 +18,13 @@
     "data": [
         "security/ir.model.access.csv",
         "data/ir_sequence_data.xml",
+        "data/symptom_data.xml",
         "views/appointment_views.xml",
         "views/application_views.xml",
         "views/partner_views.xml",
+        "views/symptom_views.xml",
     ],
-    'demo': [
+    "demo": [
         "demo/product_demo_data.xml",
         "demo/partner_demo_data.xml",
     ],

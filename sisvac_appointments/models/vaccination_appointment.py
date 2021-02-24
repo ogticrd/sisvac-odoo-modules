@@ -41,7 +41,8 @@ class VaccineApplication(models.Model):
         domain="[('product_id', '=', product_id)]",
         check_company=True,
     )
-    symptoms = fields.Text()  # TODO: consider use M2M
+    symptom_ids = fields.Many2many("sisvac.symptom")
+    symptom_notes = fields.Text()
     company_id = fields.Many2one(
         "res.company",
         string="Company",
