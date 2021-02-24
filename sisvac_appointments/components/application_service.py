@@ -5,28 +5,28 @@ from odoo.addons.component.core import Component
 
 class AppointmentsService(Component):
     _inherit = "base.rest.service"
-    _name = "appointments.service"
-    _usage = "appointments"
+    _name = "application.service"
+    _usage = "application"
     _collection = "sisvac.services"
     _description = """
-        Appointments Related models API Services
+        Vaccines Application Related models API Services
     """
 
     def get(self, _id):
-        appointment = self.env["sisvac.vaccination.appointment"].browse(_id)
+        application = self.env["sisvac.vaccine.application"].browse(_id)
         return request.make_response(
-            json.dumps(appointment._get_appointment_data()),
+            json.dumps(application._get_application_data()),
             headers=[("Content-Type", "application/json")],
         )
 
     def search(self):
         params = self.work.request.params
-        appointment_obj = self.env["sisvac.vaccination.appointment"]
+        application_obj = self.env["sisvac.vaccine.application"]
         if "limit" in params:
-            appointments = appointment_obj.search([], limit=int(params["limit"]))
+            applications = application_obj.search([], limit=int(params["limit"]))
         else:
-            appointments = appointment_obj.search([])
+            applications = application_obj.search([])
         return request.make_response(
-            json.dumps([apt._get_appointment_data() for apt in appointments]),
+            json.dumps([app._get_application_data() for app in applications]),
             headers=[("Content-Type", "application/json")],
         )

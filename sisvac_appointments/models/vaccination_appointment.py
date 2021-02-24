@@ -90,6 +90,27 @@ class VaccineApplication(models.Model):
             }
         )
 
+    def _get_application_data(self):
+        return {
+            "id": self.id,
+            "cedula": self.partner_id.vat,
+            "vaccine": {"id": self.product_id.id, "name": self.product_id.name},
+            "lot": {"id": self.lot_id.id, "name": self.lot_id.name},
+            "location": {
+                "id": self.appointment_id.location_id.id,
+                "name": self.appointment_id.location_id.name,
+            },
+            "date": fields.Date.to_string(self.application_date.date())
+            if self.application_date
+            else False,
+            "hour": self.application_date.hour if self.application_date else False,
+            "next_date": fields.Date.to_string(
+                self.appointment_id.next_appointment_date.date()
+            )
+            if self.appointment_id.next_appointment_date
+            else False,
+        }
+
 
 class VaccinationAppointment(models.Model):
     _name = "sisvac.vaccination.appointment"
@@ -252,8 +273,12 @@ class VaccinationAppointment(models.Model):
             "state": self.state,
             "cedula": self.partner_id.vat,
             "name": self.partner_id.name,
-            "date": fields.Date.to_string(self.next_appointment_date.date()),
-            "hour": self.next_appointment_date.hour,
+            "date": fields.Date.to_string(self.next_appointment_date.date())
+            if self.next_appointment_date
+            else False,
+            "hour": self.next_appointment_date.hour
+            if self.next_appointment_date
+            else False,
             "location": {
                 "id": self.location_id.id,
                 "name": self.location_id.name,
