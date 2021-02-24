@@ -3,7 +3,7 @@ from odoo.http import request
 from odoo.addons.component.core import Component
 
 
-class AppointmentsService(Component):
+class ApplicationService(Component):
     _inherit = "base.rest.service"
     _name = "application.service"
     _usage = "application"
