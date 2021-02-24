@@ -9,7 +9,7 @@
     <template id="sisvac_vaccination_website_form" name="Sisvac Vaccination Website Form">
       <t t-call="website.layout">
         <section class="s_banner pb96 o_colored_level parallax s_parallax_is_fixed s_parallax_no_overflow_hidden pt48 o_half_screen_height" data-scroll-background-ratio="1" data-snippet="s_banner" data-name="Banner" style="" data-original-id="2675" data-original-src="/web/image/2675-3ea35814/fondopeople-07.png" data-mimetype="image/png" data-resize-width="1920">
-          <span class="s_parallax_bg oe_img_bg" style="background-image: url(&quot;/web/image/2722-a5a96f04/fondopeople-07.png&quot;);"/>
+          <span class="s_parallax_bg oe_img_bg" style="background-image: url(&quot;https://vacunate.gob.do/web/image/2675-3ea35814/fondopeople-07.png&quot;);"/>
           <div class="o_container_small">
             <div class="row s_nb_column_fixed">
               <div class="jumbotron rounded o_cc o_cc1 pt32 o_colored_level pb240 col-lg-12" data-name="Box" style="">
