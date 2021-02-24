@@ -4,7 +4,7 @@
     "website": "http://optic.gob.do",
     "category": "Uncategorized",
     "version": "0.1",
-    "depends": ["website", "sisvac_appointments"],
+    "depends": ["website"],
     "data": [
         "views/templates.xml",
     ],
