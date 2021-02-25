@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="vaccination_appointment_form_view" model="ir.ui.view">
+        <field name="name">vaccination.appointment.form.view</field>
+        <field name="model">sisvac.vaccination.appointment</field>
+        <field name="arch" type="xml">
+            <form string="Vaccination Appointment">
+                <header>
+                    <button name="action_confirm_appointment" type="object"
+                            attrs="{'invisible': [('state', '!=', 'draft')]}"
+                            class="btn btn-primary" string="Record Vaccines"/>
+                    <button name="action_apply_vaccine_wizard" type="object"
+                            attrs="{'invisible': [('show_vaccine_wizard_button', '=', False)]}"
+                            class="btn btn-primary" string="Apply Vaccine"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,scheduled"/>
+                </header>
+                <sheet>
+                    <!-- Appointment status ribbon -->
+                    <widget name="web_ribbon" title="Completed"
+                            attrs="{'invisible': [('state', '!=', 'completed')]}"/>
+                    <widget name="web_ribbon" title="Cancelled"
+                            bg_color="bg-danger"
+                            attrs="{'invisible': [('state', '!=', 'cancelled')]}"/>
+                    <field name="show_vaccine_wizard_button"
+                           attrs="{'invisible': True}"/>
+                    <field name="image_1920" widget="image" class="oe_avatar"/>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"
+                               attrs="{'invisible': [('state', '=', 'draft')]}"/>
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group name="patient_info" string="Patient info">
+                            <field name="partner_id" widget="res_partner_many2one"
+                                   context="{'show_address': 1, 'show_vat': True}"
+                                   options="{'always_reload': True}"
+                            />
+                            <field name="birthdate_date"/>
+                            <field name="age"/>
+                            <field name="gender"/>
+                            <field name="observations"/>
+                        </group>
+                        <group name="appointment_info" string="Vaccination info">
+                            <field name="product_id"/>
+                            <field name="location_id"/>
+                            <field name="first_appointment_date"/>
+                            <field name="last_appointment_date"/>
+                            <field name="next_appointment_date"/>
+                            <field name="company_id" attrs="{'invisible': True}"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page name="applications" string="Vaccine applications">
+                            <field name="application_ids" widget="one2many" mode="tree">
+                                <tree create="false" delete="false">
+                                    <field name="appointment_id" invisible="1"/>
+                                    <field name="application_date"/>
+                                    <field name="lot_id"/>
+                                    <field name="product_id" invisible="1"/>
+                                    <field name="medic_partner_id"/>
+                                    <field name="state"/>
+                                    <field name="symptom_ids" widget="many2many_tags"/>
+                                    <field name="company_id" invisible="1"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="vaccination_appointment_tree_view" model="ir.ui.view">
+        <field name="name">vaccination.appointment.tree.view</field>
+        <field name="model">sisvac.vaccination.appointment</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="birthdate_date"/>
+                <field name="gender"/>
+                <field name="last_appointment_date"/>
+                <field name="next_appointment_date"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="vaccination_appointment_action" model="ir.actions.act_window">
+        <field name="name">Appointments</field>
+        <field name="res_model">sisvac.vaccination.appointment</field>
+        <field name="view_mode">tree,form</field> <!-- TODO: include calendar-->
+        <!--<field name="search_view_id" ref="sisvac_calendar_event_search"/>-->
+    </record>
+
+    <menuitem
+        id="menu_sisvac_root"
+        name="SISVAC"
+        web_icon="sisvac_app,static/description/icon.png"
+        sequence="40"/>
+
+    <menuitem
+        id="vaccination_appointment_menu_root"
+        name="Appointments"
+        sequence="40"
+        parent="menu_sisvac_root"
+    />
+
+    <menuitem
+        id="vaccination_appointment_menu"
+        name="Appointments"
+        sequence="40"
+        parent="vaccination_appointment_menu_root"
+        action="vaccination_appointment_action"
+    />
+
+</odoo>

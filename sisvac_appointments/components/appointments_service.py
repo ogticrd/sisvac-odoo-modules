@@ -12,10 +12,20 @@ class AppointmentsService(Component):
         Appointments Related models API Services
     """
 
-    def search(self):
-        appointments = self.env["calendar.event"].search(
-            [("vaccination_appointment", "=", True)]
+    def get(self, _id):
+        appointment = self.env["sisvac.vaccination.appointment"].browse(_id)
+        return request.make_response(
+            json.dumps(appointment._get_appointment_data()),
+            headers=[("Content-Type", "application/json")],
         )
+
+    def search(self):
+        params = self.work.request.params
+        appointment_obj = self.env["sisvac.vaccination.appointment"]
+        if "limit" in params:
+            appointments = appointment_obj.search([], limit=int(params["limit"]))
+        else:
+            appointments = appointment_obj.search([])
         return request.make_response(
             json.dumps([apt._get_appointment_data() for apt in appointments]),
             headers=[("Content-Type", "application/json")],

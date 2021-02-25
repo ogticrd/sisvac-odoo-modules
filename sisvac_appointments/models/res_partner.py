@@ -1,14 +1,20 @@
-from odoo import fields, models, api, _
+from odoo import fields, models, api
+from odoo.exceptions import ValidationError
 
 
 class ResPartner(models.Model):
     _inherit = "res.partner"
 
-    is_vaccinator = fields.Boolean()
-    vaccine_appointment_count = fields.Integer(
-        compute='_compute_vaccine_appointment_count', string='Vaccine Appointment Count')
-    vaccine_appointment_ids = fields.One2many('calendar.event', 'patient_id', 'Vaccine Appointment')
+    sisvac_is_vaccinator = fields.Boolean()
+    sisvac_is_patient = fields.Boolean()
+    sisvac_is_vaccination_center = fields.Boolean()
 
-    def _compute_vaccine_appointment_count(self):
-        for partner in self:
-            partner.vaccine_appointment_count = len(partner.vaccine_appointment_ids)
+    @api.constrains(
+        "sisvac_is_vaccinator", "sisvac_is_patient", "sisvac_is_vaccination_center"
+    )
+    def _check_sisvac_is_vaccination_center(self):
+        for partner in self.filtered(lambda p: p.sisvac_is_vaccination_center):
+            if partner.sisvac_is_vaccinator or partner.sisvac_is_patient:
+                raise ValidationError(
+                    "Vaccination Center can't be set as Patient/Vaccinator"
+                )

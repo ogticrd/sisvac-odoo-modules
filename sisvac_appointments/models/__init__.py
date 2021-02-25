@@ -1,3 +1,5 @@
-from . import calendar_event
+from . import vaccination_symptom
+from . import product
 from . import res_partner
-from . import symptoms
+from . import vaccination_appointment
+from . import vaccination_consent

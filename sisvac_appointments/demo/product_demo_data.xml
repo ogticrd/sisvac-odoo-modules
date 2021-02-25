@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="sisvac_vaccine_astrazeneca" model="product.template">
+        <field name="name">Astrazeneca</field>
+        <field name="image_1920" type="base64"
+               file="sisvac_appointments/static/img/astrazeneca.png"/>
+        <field name="sisvac_is_vaccine" eval="True"/>
+        <field name="sisvac_dose_qty" eval="2"/>
+        <field name="sisvac_dose_interval" eval="2"/>
+        <field name="sisvac_unit_time_between_dose">weeks</field>
+    </record>
+
+</odoo>
