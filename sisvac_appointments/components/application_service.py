@@ -50,7 +50,7 @@ class ApplicationService(Component):
                 status=400,
                 headers=[("Content-Type", "application/json")],
                 message="Time data %s %s does not match format 'Y-m-d H:M:S'"
-                        % (params["date"], params["hour"]),
+                % (params["date"], params["hour"]),
             )
         return date
 
@@ -76,7 +76,7 @@ class ApplicationService(Component):
                 status=400,
                 headers=[("Content-Type", "application/json")],
                 message="%s params required for application create"
-                        % ", ".join(missing_fields),
+                % ", ".join(missing_fields),
             )
 
         vat = params["cedula"]
@@ -185,5 +185,5 @@ class ApplicationService(Component):
                 status=200,
                 headers=[("Content-Type", "application/json")],
                 message="Appointment %s Vaccine Application update"
-                        % appointment_id.name,
+                % appointment_id.name,
             )
