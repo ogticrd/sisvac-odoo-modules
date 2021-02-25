@@ -16,7 +16,7 @@ class ResPartner(models.Model):
     sisvac_emergency_contact_vat = fields.Char("Emergency Contact Vat")
     sisvac_emergency_contact_phone = fields.Char("Emergency Contact Phone")
     sisvac_emergency_contact_relationship = fields.Selection(
-        "Emergency Contact Phone", [
+        [
             ("Abuelo/Abuela", "Abuelo/Abuela"),
             ("Padre/Madre", "Padre/Madre"),
             ("Tio/Tia", "Tio/Tia"),
@@ -27,6 +27,6 @@ class ResPartner(models.Model):
             ("Nieto/Nieta", "Nieto/Nieta"),
             ("Sobrino/Sobrina", "Sobrino/Sobrina"),
             ("Hijastro/Hijastra", "Hijastro/Hijastra")
-        ]
+        ], string="Emergency Contact Phone"
     )  # TODO: fix value names
     sisvac_pre_registered = fields.Boolean("Pre-registered")

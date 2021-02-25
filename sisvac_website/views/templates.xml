@@ -125,7 +125,7 @@
                           </div>
                         </div>
 
-                        <p>Comorbilidades</p>
+                        <h3 style="margin: 1em 0;">Comorbilidades</h3>
 
                         <div class="form-group col-12">
                           <div class="row s_col_no_resize s_col_no_bgcolor">
@@ -210,7 +210,7 @@
                           </div>
                         </div>
 
-                        <p>Contacto de emergencia</p>
+                        <h3 style="margin: 1em 0;">Contacto de emergencia</h3>
 
                         <div class="form-group col-12">
                           <div class="row s_col_no_resize s_col_no_bgcolor">
@@ -256,16 +256,16 @@
                             <div class="col-sm">
                               <select name="sisvac_emergency_contact_relationship" class="form-control">
                                 <option value=""></option>
-                                <option value="">Abuelo/Abuela</option>
-                                <option value="">Padre/Madre</option>
-                                <option value="">Tio/Tia</option>
-                                <option value="">Esposo/Esposa</option>
-                                <option value="">Suegro/Suegra</option>
-                                <option value="">Hermano/Hermana</option>
-                                <option value="">Hijo/Hija</option>
-                                <option value="">Nieto/Nieta</option>
-                                <option value="">Sobrino/Sobrina</option>
-                                <option value="">Hijastro/Hijastra</option>
+                                <option value="Abuelo/Abuela">Abuelo/Abuela</option>
+                                <option value="Padre/Madre">Padre/Madre</option>
+                                <option value="Tio/Tia">Tio/Tia</option>
+                                <option value="Esposo/Esposa">Esposo/Esposa</option>
+                                <option value="Suegro/Suegra">Suegro/Suegra</option>
+                                <option value="Hermano/Hermana">Hermano/Hermana</option>
+                                <option value="Hijo/Hija">Hijo/Hija</option>
+                                <option value="Nieto/Nieta">Nieto/Nieta</option>
+                                <option value="Sobrino/Sobrina">Sobrino/Sobrina</option>
+                                <option value="Hijastro/Hijastra">Hijastro/Hijastra</option>
                               </select>
                             </div>
                           </div>
