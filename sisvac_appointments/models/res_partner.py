@@ -20,7 +20,7 @@ class ResPartner(models.Model):
     sisvac_emergency_contact_vat = fields.Char("Emergency Contact Vat")
     sisvac_emergency_contact_phone = fields.Char("Emergency Contact Phone")
     sisvac_emergency_contact_relationship = fields.Selection(
-        "Emergency Contact Phone", [
+        "Emergency Contact Relationship", [
             ("Abuelo/Abuela", "Abuelo/Abuela"),
             ("Padre/Madre", "Padre/Madre"),
             ("Tio/Tia", "Tio/Tia"),
