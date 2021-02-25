@@ -1,7 +1,9 @@
-import json
 from odoo import fields
-from odoo.http import request, Response
 from odoo.addons.component.core import Component
+
+from .common import SisvacComponentsCommon
+
+ResponseWrapper = SisvacComponentsCommon.response_wrapper
 
 
 class ApplicationService(Component):
@@ -15,8 +17,10 @@ class ApplicationService(Component):
 
     def get(self, _id):
         application = self.env["sisvac.vaccine.application"].browse(_id)
-        return request.make_response(
-            json.dumps(application._get_application_data()),
+        return ResponseWrapper(
+            success=True,
+            status=200,
+            data=application._get_application_data(),
             headers=[("Content-Type", "application/json")],
         )
 
@@ -27,8 +31,11 @@ class ApplicationService(Component):
             applications = application_obj.search([], limit=int(params["limit"]))
         else:
             applications = application_obj.search([])
-        return request.make_response(
-            json.dumps([app._get_application_data() for app in applications]),
+
+        return ResponseWrapper(
+            success=True,
+            status=200,
+            data=[app._get_application_data() for app in applications],
             headers=[("Content-Type", "application/json")],
         )
 
@@ -38,10 +45,12 @@ class ApplicationService(Component):
             date_string = params["date"] + " " + params["hour"]
             date = fields.Datetime.from_string(date_string)
         except ValueError:
-            return Response(
-                "Error. Time data %s %s does not match format 'Y-m-d H:M:S'"
-                % (params["date"], params["hour"]),
-                status="400",
+            return ResponseWrapper(
+                success=False,
+                status=400,
+                headers=[("Content-Type", "application/json")],
+                message="Time data %s %s does not match format 'Y-m-d H:M:S'"
+                        % (params["date"], params["hour"]),
             )
         return date
 
@@ -62,10 +71,12 @@ class ApplicationService(Component):
         missing_fields = [f for f in required_fields if f not in params]
 
         if missing_fields:
-            return Response(
-                "Error. %s params required for application create"
-                % ", ".join(missing_fields),
-                status="400",
+            return ResponseWrapper(
+                success=False,
+                status=400,
+                headers=[("Content-Type", "application/json")],
+                message="%s params required for application create"
+                        % ", ".join(missing_fields),
             )
 
         vat = params["cedula"]
@@ -78,21 +89,41 @@ class ApplicationService(Component):
 
         vaccinator_id = Partner.browse(int(params["vaccinator"]))
         if not vaccinator_id:
-            return Response("Error. Vaccinator not found.", status="400")
+            return ResponseWrapper(
+                success=False,
+                status=400,
+                headers=[("Content-Type", "application/json")],
+                message="Vaccinator not found",
+            )
 
         lot_id = self.env["stock.production.lot"].browse(int(params["lot"]))
         if not lot_id:
-            return Response("Error. Lot not found.", status="400")
+            return ResponseWrapper(
+                success=False,
+                status=400,
+                headers=[("Content-Type", "application/json")],
+                message="Lot not found",
+            )
 
         product = params["vaccine"]
         product_id = self.env["product.product"].browse(int(product))
         if not product_id:
-            return Response("Error. Vaccine not found.", status="400")
+            return ResponseWrapper(
+                success=False,
+                status=400,
+                headers=[("Content-Type", "application/json")],
+                message="Vaccine not found",
+            )
 
         location = params["location"]
         location_id = self.env["stock.location"].browse(int(location))
         if not location_id:
-            return Response("Error. Location not found.", status="400")
+            return ResponseWrapper(
+                success=False,
+                status=400,
+                headers=[("Content-Type", "application/json")],
+                message="Location not found",
+            )
 
         Appointment = self.env["sisvac.vaccination.appointment"]
         appointment_id = Appointment.search(
@@ -129,11 +160,14 @@ class ApplicationService(Component):
                     ("state", "=", "scheduled"),
                 ],
                 order="application_date asc",
-                limit=1
+                limit=1,
             )
             if not application_id:
-                return Response(
-                    "Error. No pending applications found for given dose.", status="400"
+                return ResponseWrapper(
+                    success=False,
+                    status=400,
+                    headers=[("Content-Type", "application/json")],
+                    message="No pending applications found for given dose",
                 )
 
             application_id.update(
@@ -145,3 +179,11 @@ class ApplicationService(Component):
                 }
             )
             application_id.apply()
+
+            return ResponseWrapper(
+                success=True,
+                status=200,
+                headers=[("Content-Type", "application/json")],
+                message="Appointment %s Vaccine Application update"
+                        % appointment_id.name,
+            )
