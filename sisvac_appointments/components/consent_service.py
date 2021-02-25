@@ -1,6 +1,8 @@
-import json
-from odoo.http import request, Response
 from odoo.addons.component.core import Component
+
+from .common import SisvacComponentsCommon
+
+ResponseWrapper = SisvacComponentsCommon.response_wrapper
 
 
 class ConsentService(Component):
@@ -14,8 +16,10 @@ class ConsentService(Component):
 
     def get(self, _id):
         consent = self.env["sisvac.vaccination.consent"].browse(_id)
-        return request.make_response(
-            json.dumps(consent._get_consent_data()),
+        return ResponseWrapper(
+            success=True,
+            status=200,
+            data=consent._get_consent_data(),
             headers=[("Content-Type", "application/json")],
         )
 
@@ -26,16 +30,21 @@ class ConsentService(Component):
             consents = consent_obj.search([], limit=int(params["limit"]))
         else:
             consents = consent_obj.search([])
-        return request.make_response(
-            json.dumps([c._get_consent_data() for c in consents]),
+        return ResponseWrapper(
+            success=True,
+            status=200,
+            data=[c._get_consent_data() for c in consents],
             headers=[("Content-Type", "application/json")],
         )
 
     def create(self):
         params = self.work.request.params
         if "cedula" not in params:
-            return Response(
-                "Error. cedula param is required for consent create", status="400"
+            return ResponseWrapper(
+                success=False,
+                status=400,
+                message="cedula param is required for consent create",
+                headers=[("Content-Type", "application/json")],
             )
 
         Partner = self.env["res.partner"]
@@ -77,7 +86,9 @@ class ConsentService(Component):
             }
         )
 
-        return request.make_response(
-            json.dumps(consent_id._get_consent_data()),
+        return ResponseWrapper(
+            success=True,
+            status=200,
+            data=consent_id._get_consent_data(),
             headers=[("Content-Type", "application/json")],
         )

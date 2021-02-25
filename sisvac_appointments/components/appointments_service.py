@@ -1,5 +1,3 @@
-import json
-from odoo.http import request
 from odoo.addons.component.core import Component
 
 from .common import SisvacComponentsCommon
