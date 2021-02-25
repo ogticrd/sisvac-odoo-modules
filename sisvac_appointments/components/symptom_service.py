@@ -1,6 +1,8 @@
-import json
-from odoo.http import request
 from odoo.addons.component.core import Component
+
+from .common import SisvacComponentsCommon
+
+ResponseWrapper = SisvacComponentsCommon.response_wrapper
 
 
 class SymptomService(Component):
@@ -14,8 +16,10 @@ class SymptomService(Component):
 
     def get(self, _id):
         symptom = self.env["sisvac.symptom"].browse(_id)
-        return request.make_response(
-            json.dumps({"id": symptom.id, "name": symptom.name}),
+        return ResponseWrapper(
+            success=True,
+            status=200,
+            data={"id": symptom.id, "name": symptom.name},
             headers=[("Content-Type", "application/json")],
         )
 
@@ -26,7 +30,10 @@ class SymptomService(Component):
             symptoms = symptom_obj.search([], limit=int(params["limit"]))
         else:
             symptoms = symptom_obj.search([])
-        return request.make_response(
-            json.dumps([{"id": s.id, "name": s.name} for s in symptoms]),
+
+        return ResponseWrapper(
+            success=True,
+            status=200,
+            data=[{"id": s.id, "name": s.name} for s in symptoms],
             headers=[("Content-Type", "application/json")],
         )
