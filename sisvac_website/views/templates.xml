@@ -1,15 +1,15 @@
 <odoo>
   <data>
     <record id="sisvac_website_menu_vaccination" model="website.menu">
-      <field name="name">Vaccination Appointment</field>
-      <field name="url">/appointment</field>
+      <field name="name">Pre registry</field>
+      <field name="url">/registry</field>
       <field name="parent_id" ref="website.main_menu"/>
     </record>
 
     <template id="sisvac_vaccination_website_form" name="Sisvac Vaccination Website Form">
       <t t-call="website.layout">
         <section class="s_banner pb96 o_colored_level parallax s_parallax_is_fixed s_parallax_no_overflow_hidden pt48 o_half_screen_height" data-scroll-background-ratio="1" data-snippet="s_banner" data-name="Banner" style="" data-original-id="2675" data-original-src="/web/image/2675-3ea35814/fondopeople-07.png" data-mimetype="image/png" data-resize-width="1920">
-          <span class="s_parallax_bg oe_img_bg" style="background-image: url(&quot;https://vacunate.gob.do/web/image/2675-3ea35814/fondopeople-07.png&quot;);"/>
+          <span class="s_parallax_bg oe_img_bg" style="background-image: url(&quot;/web/image/2675-3ea35814/fondopeople-07.png&quot;);"/>
           <div class="o_container_small">
             <div class="row s_nb_column_fixed">
               <div class="jumbotron rounded o_cc o_cc1 pt32 o_colored_level pb240 col-lg-12" data-name="Box" style="">
@@ -24,18 +24,18 @@
                   <span style="text-align: left; white-space: pre-wrap;">la cita para vacunación.</span>
                   <br/>
                 </p>
-                <section class="s_website_form pt16 pb16 o_colored_level" data-vcss="001" data-snippet="s_website_form" data-name="Form" style="">
+                <section class="pt16 pb16 o_colored_level">
                   <div class="container">
-                    <form role="form" action="/sisvac/update_patient/" method="POST" class="patient_form">
-                      <div class="form-group s_website_form_field col-12">
+                    <form role="form" action="/sisvac/update_patient" method="POST" class="patient_form" enctype="multipart/form-data">
+                      <div class="form-group col-12">
 
                         <div class="row s_col_no_resize s_col_no_bgcolor">
-                          <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="partner_vat">
-                            <span class="s_website_form_label_content">Cédula</span>
+                          <label class="col-form-label col-sm-auto" style="width: 200px" for="partner_vat">
+                            <span class="">Cédula</span>
                             <span class="s_website_form_mark"> *</span>
                           </label>
                           <div class="col-sm">
-                            <input type="text" class="form-control s_website_form_input" name="partner_vat" required="1" placeholder="" id="partner_vat"/>
+                            <input type="text" class="form-control" name="partner_vat" required="1" placeholder="" id="partner_vat"/>
                             <input type="hidden" name="vat" t-att-value="vat" id="vat"/> 
                           </div>
                         </div>
@@ -51,54 +51,54 @@
                           <br/>
                         </p>
 
-                        <div class="form-group s_website_form_field col-12">
+                        <div class="form-group col-12">
                           <div class="row s_col_no_resize s_col_no_bgcolor">
-                            <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="phone">
-                              <span class="s_website_form_label_content">Teléfono</span>
+                            <label class="col-form-label col-sm-auto" style="width: 200px" for="phone">
+                              <span class="">Teléfono</span>
                             </label>
                             <div class="col-sm">
-                              <input type="text" class="form-control s_website_form_input" name="phone" id="phone" placeholder=""/>
+                              <input type="text" class="form-control" name="phone" id="phone" placeholder=""/>
                             </div>
                           </div>
                         </div>
 
-                        <div class="form-group s_website_form_field col-12">
+                        <div class="form-group col-12">
                           <div class="row s_col_no_resize s_col_no_bgcolor">
-                            <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="mobile">
-                              <span class="s_website_form_label_content">Celular</span>
+                            <label class="col-form-label col-sm-auto" style="width: 200px" for="mobile">
+                              <span class="">Celular</span>
                             </label>
                             <div class="col-sm">
-                              <input type="text" class="form-control s_website_form_input" name="mobile" id="mobile" placeholder=""/>
+                              <input type="text" class="form-control" name="mobile" id="mobile" placeholder=""/>
                             </div>
                           </div>
                         </div>
 
-                        <div class="form-group s_website_form_field col-12">
+                        <div class="form-group col-12">
                           <div class="row s_col_no_resize s_col_no_bgcolor">
-                            <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="email">
-                              <span class="s_website_form_label_content">Email</span>
+                            <label class="col-form-label col-sm-auto" style="width: 200px" for="email">
+                              <span class="">Email</span>
                             </label>
                             <div class="col-sm">
-                              <input type="text" class="form-control s_website_form_input" name="email" id="email" placeholder=""/>
+                              <input type="text" class="form-control" name="email" id="email" placeholder=""/>
                             </div>
                           </div>
                         </div>
 
-                        <div class="form-group s_website_form_field col-12">
+                        <div class="form-group col-12">
                           <div class="row s_col_no_resize s_col_no_bgcolor">
-                            <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="city">
-                              <span class="s_website_form_label_content">Sector</span>
+                            <label class="col-form-label col-sm-auto" style="width: 200px" for="city">
+                              <span class="">Sector</span>
                             </label>
                             <div class="col-sm">
-                              <input type="text" class="form-control s_website_form_input" name="city" id="city" placeholder=""/>
+                              <input type="text" class="form-control" name="city" id="city" placeholder=""/>
                             </div>
                           </div>
                         </div>
 
-                        <div class="form-group s_website_form_field col-12">
+                        <div class="form-group col-12">
                           <div class="row s_col_no_resize s_col_no_bgcolor">
-                            <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="state_id">
-                              <span class="s_website_form_label_content">Provincia</span>
+                            <label class="col-form-label col-sm-auto" style="width: 200px" for="state_id">
+                              <span class="">Provincia</span>
                             </label>
                             <div class="col-sm">
                               <select name="state_id" class="form-control">
@@ -113,13 +113,13 @@
                           </div>
                         </div>
 
-                        <div class="form-group s_website_form_field col-12">
+                        <div class="form-group col-12">
                           <div class="row s_col_no_resize s_col_no_bgcolor">
-                            <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="disability">
-                              <span class="s_website_form_label_content">Discapacitado</span>
+                            <label class="col-form-label col-sm-auto" style="width: 200px" for="sisvac_has_discapacity">
+                              <span class="">Condición de Discapacidad</span>
                             </label>
                             <div class="col-sm">
-                              <input type="checkbox" class="form-control s_website_form_input" name="disability" id="disability"
+                              <input type="checkbox" class="form-control" name="sisvac_has_discapacity" id="sisvac_has_discapacity"
                                       style="width: auto;"/>
                             </div>
                           </div>
@@ -127,131 +127,134 @@
 
                         <p>Comorbilidades</p>
 
-                        <div class="form-group s_website_form_field col-12">
+                        <div class="form-group col-12">
                           <div class="row s_col_no_resize s_col_no_bgcolor">
-                            <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="city">
-                              <span class="s_website_form_label_content">Hipertensión</span>
+                            <label class="col-form-label col-sm-auto" style="width: 200px" for="sisvac_has_hypertension">
+                              <span class="">Hipertensión</span>
                             </label>
                             <div class="col-sm">
-                              <input type="checkbox" class="form-control s_website_form_input" name="disability" id="disability"
+                              <input type="checkbox" class="form-control" name="sisvac_has_hypertension" id="sisvac_has_hypertension"
                                       style="width: auto;"/>
                             </div>
                           </div>
                         </div>
                         
-                        <div class="form-group s_website_form_field col-12">
+                        <div class="form-group col-12">
                           <div class="row s_col_no_resize s_col_no_bgcolor">
-                            <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="city">
-                              <span class="s_website_form_label_content">Diabetes</span>
+                            <label class="col-form-label col-sm-auto" style="width: 200px" for="sisvac_has_diabetes">
+                              <span class="">Diabetes</span>
                             </label>
                             <div class="col-sm">
-                              <input type="checkbox" class="form-control s_website_form_input" name="disability" id="disability"
+                              <input type="checkbox" class="form-control" name="sisvac_has_diabetes" id="sisvac_has_diabetes"
                                       style="width: auto;"/>
                             </div>
                           </div>
                         </div>
                         
-                        <div class="form-group s_website_form_field col-12">
+                        <div class="form-group col-12">
                           <div class="row s_col_no_resize s_col_no_bgcolor">
-                            <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="city">
-                              <span class="s_website_form_label_content">Obesidad</span>
+                            <label class="col-form-label col-sm-auto" style="width: 200px" for="sisvac_has_obesity">
+                              <span class="">Obesidad</span>
                             </label>
                             <div class="col-sm">
-                              <input type="checkbox" class="form-control s_website_form_input" name="disability" id="disability"
+                              <input type="checkbox" class="form-control" name="sisvac_has_obesity" id="sisvac_has_obesity"
                                       style="width: auto;"/>
                             </div>
                           </div>
                         </div>
                         
-                        <div class="form-group s_website_form_field col-12">
+                        <div class="form-group col-12">
                           <div class="row s_col_no_resize s_col_no_bgcolor">
-                            <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="city">
-                              <span class="s_website_form_label_content">Asma</span>
+                            <label class="col-form-label col-sm-auto" style="width: 200px" for="sisvac_has_asthma">
+                              <span class="">Asma</span>
                             </label>
                             <div class="col-sm">
-                              <input type="checkbox" class="form-control s_website_form_input" name="disability" id="disability"
+                              <input type="checkbox" class="form-control" name="sisvac_has_asthma" id="sisvac_has_asthma"
                                       style="width: auto;"/>
                             </div>
                           </div>
                         </div>
                         
-                        <div class="form-group s_website_form_field col-12">
+                        <div class="form-group col-12">
                           <div class="row s_col_no_resize s_col_no_bgcolor">
-                            <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="city">
-                              <span class="s_website_form_label_content">Enfermades Cardiovasculares</span>
+                            <label class="col-form-label col-sm-auto" style="width: 200px" for="sisvac_has_cardiovascular">
+                              <span class="">Enfermades Cardiovasculares</span>
                             </label>
                             <div class="col-sm">
-                              <input type="checkbox" class="form-control s_website_form_input" name="disability" id="disability"
-                                      style="width: auto;"/>
+                              <input type="checkbox" class="form-control" name="sisvac_has_cardiovascular" 
+                                      id="sisvac_has_cardiovascular" style="width: auto;"/>
                             </div>
                           </div>
                         </div>
                         
-                        <div class="form-group s_website_form_field col-12">
+                        <div class="form-group col-12">
                           <div class="row s_col_no_resize s_col_no_bgcolor">
-                            <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="city">
-                              <span class="s_website_form_label_content">Insuficiencia Renal</span>
+                            <label class="col-form-label col-sm-auto" style="width: 200px" for="sisvac_has_renal_insufficiency">
+                              <span class="">Insuficiencia Renal</span>
                             </label>
                             <div class="col-sm">
-                              <input type="checkbox" class="form-control s_website_form_input" name="disability" id="disability"
-                                      style="width: auto;"/>
+                              <input type="checkbox" class="form-control" name="sisvac_has_renal_insufficiency" 
+                                      id="sisvac_has_renal_insufficiency" style="width: auto;"/>
                             </div>
                           </div>
                         </div>
 
-                        <div class="form-group s_website_form_field col-12">
+                        <div class="form-group col-12">
                           <div class="row s_col_no_resize s_col_no_bgcolor">
-                            <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="notes">
-                              <span class="s_website_form_label_content">Notas</span>
+                            <label class="col-form-label col-sm-auto" style="width: 200px" for="sisvac_health_notes">
+                              <span class="">Notas</span>
                             </label>
                             <div class="col-sm">
-                              <textarea class="form-control s_website_form_input" name="notes" id="notes" placeholder=""/>
+                              <textarea class="form-control" name="sisvac_health_notes" id="sisvac_health_notes" placeholder=""/>
                             </div>
                           </div>
                         </div>
 
                         <p>Contacto de emergencia</p>
 
-                        <div class="form-group s_website_form_field col-12">
+                        <div class="form-group col-12">
                           <div class="row s_col_no_resize s_col_no_bgcolor">
-                            <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="contact_name">
-                              <span class="s_website_form_label_content">Nombre</span>
+                            <label class="col-form-label col-sm-auto" style="width: 200px" for="sisvac_emergency_contact_name">
+                              <span class="">Nombre</span>
                             </label>
                             <div class="col-sm">
-                              <input type="text" class="form-control s_website_form_input" name="contact_name" id="contact_name" placeholder=""/>
+                              <input type="text" class="form-control" name="sisvac_emergency_contact_name" 
+                                      id="sisvac_emergency_contact_name" placeholder=""/>
                             </div>
                           </div>
                         </div>
 
-                        <div class="form-group s_website_form_field col-12">
+                        <div class="form-group col-12">
                           <div class="row s_col_no_resize s_col_no_bgcolor">
-                            <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="contact_name">
-                              <span class="s_website_form_label_content">Cédula</span>
+                            <label class="col-form-label col-sm-auto" style="width: 200px" for="sisvac_emergency_contact_vat">
+                              <span class="">Cédula</span>
                             </label>
                             <div class="col-sm">
-                              <input type="text" class="form-control s_website_form_input" name="contact_name" id="contact_name" placeholder=""/>
+                              <input type="text" class="form-control" name="sisvac_emergency_contact_vat" 
+                                      id="sisvac_emergency_contact_vat" placeholder=""/>
                             </div>
                           </div>
                         </div>
 
-                        <div class="form-group s_website_form_field col-12">
+                        <div class="form-group col-12">
                           <div class="row s_col_no_resize s_col_no_bgcolor">
-                            <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="contact_name">
-                              <span class="s_website_form_label_content">Teléfono</span>
+                            <label class="col-form-label col-sm-auto" style="width: 200px" for="sisvac_emergency_contact_phone">
+                              <span class="">Teléfono</span>
                             </label>
                             <div class="col-sm">
-                              <input type="text" class="form-control s_website_form_input" name="contact_name" id="contact_name" placeholder=""/>
+                              <input type="text" class="form-control" name="sisvac_emergency_contact_phone" 
+                                      id="sisvac_emergency_contact_phone" placeholder=""/>
                             </div>
                           </div>
                         </div>
 
-                        <div class="form-group s_website_form_field col-12">
+                        <div class="form-group col-12">
                           <div class="row s_col_no_resize s_col_no_bgcolor">
-                            <label class="col-form-label col-sm-auto s_website_form_label" style="width: 200px" for="contact_relationship">
-                              <span class="s_website_form_label_content">Parentesco</span>
+                            <label class="col-form-label col-sm-auto" style="width: 200px" for="sisvac_emergency_contact_relationship">
+                              <span class="">Parentesco</span>
                             </label>
                             <div class="col-sm">
-                              <select name="contact_relationship" class="form-control">
+                              <select name="sisvac_emergency_contact_relationship" class="form-control">
                                 <option value=""></option>
                                 <option value="">Abuelo/Abuela</option>
                                 <option value="">Padre/Madre</option>
@@ -269,7 +272,7 @@
                         </div>
 
                         <div class="form-group col-12">
-                          <button type="submit" class="btn btn-lg btn-primary o_website_form_send">Registrarme</button>
+                          <button type="submit" class="btn btn-lg btn-primary">Registrarme</button>
                           <span id="o_website_form_result"></span> 
                         </div>
                       </div>

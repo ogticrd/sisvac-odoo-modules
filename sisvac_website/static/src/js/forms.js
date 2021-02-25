@@ -26,7 +26,7 @@ odoo.define('sisvac.partner_form', function (require) {
             dataType: 'json',
             success: function (data) {
                 $partner_vat.prop("disabled", true);
-                $hidden_vat.html($partner_vat.html());
+                $hidden_vat.val($partner_vat.val());
                 $form_body.removeClass("d-none");
                 $name.html(data.patient_name);
             },

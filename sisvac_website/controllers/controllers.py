@@ -8,7 +8,7 @@ from odoo.http import request
 
 class Vaccination(http.Controller):
 
-    @http.route('/appointment', type='http', auth='public', methods=['GET'], website=True)
+    @http.route('/registry', type='http', auth='public', methods=['GET'], website=True)
     def website_appointment(self, **kwargs):
         dr_country_id = 61
         country_states = request.env['res.country.state'].search([("country_id", "=", dr_country_id)])
@@ -42,17 +42,24 @@ class Vaccination(http.Controller):
             return
 
         partner_data = {}
-        partner_allow_data = ["phone", "mobile", "state_id", "city", "email", "disability", "notes"]
+        partner_allow_data = [
+            "phone", "mobile", "state_id", "city", "email",
+            "sisvac_has_hypertension", "sisvac_has_diabetes", "sisvac_has_obesity",
+            "sisvac_has_asthma", "sisvac_has_cardiovascular", "sisvac_has_renal_insufficiency",
+            "sisvac_has_discapacity", "sisvac_health_notes",
+            "sisvac_emergency_contact_name", "sisvac_emergency_contact_vat",
+            "sisvac_emergency_contact_phone", "sisvac_emergency_contact_relationship"
+        ]
         partner = request.env["res.partner"].sudo().search([("vat", "=", post.get("vat"))], limit=1)
         if not partner:
             return
 
         for f, v in post.items():
-            if v and v in partner_allow_data:
+            if v and f in partner_allow_data:
                 partner_data.update({f: v})
 
         if partner_data:
-            partner_data.update({"country_id": 61})
+            partner_data.update({"country_id": 61, "sisvac_pre_registered": True})
             partner.sudo().update(partner_data)
 
         return redirect("/contactus-thank-you")
