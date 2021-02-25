@@ -111,7 +111,7 @@ class VaccineApplication(models.Model):
             )
             if self.appointment_id.next_appointment_date
             else False,
-            "symptoms": [{"id": s.id, "name": s.name} for s in self.symptom_ids]
+            "symptoms": [{"id": s.id, "name": s.name} for s in self.symptom_ids],
         }
 
 
@@ -127,6 +127,7 @@ class VaccinationAppointment(models.Model):
         readonly=True,
         default="Draft",
         copy=False,
+        index=True,
     )
 
     # Patient
@@ -135,6 +136,7 @@ class VaccinationAppointment(models.Model):
         domain="[('sisvac_is_patient', '=', True)]",
         string="Name",
         required=True,
+        index=True,
     )
     patient_signature = fields.Binary()  # TODO: implement this stuff
     image_1920 = fields.Binary(related="partner_id.image_1920")
@@ -191,6 +193,28 @@ class VaccinationAppointment(models.Model):
         default=lambda self: self.env.company,
     )
 
+    _sql_constraints = [
+        ("name_unique", "UNIQUE(name)", "Appointment number must be unique")
+    ]
+
+    @api.constrains("partner_id", "state", "product_id")
+    def _check_appointment_scheduled_unique(self):
+        """
+        Check patient have only one scheduled appointment per vaccine
+        """
+        if self.search_count(
+            [
+                ("partner_id", "=", self.partner_id.id),
+                ("product_id", "=", self.product_id.id),
+                ("state", "=", "scheduled"),
+                ("id", "!=", self.id),
+            ]
+        ):
+            raise UserError(
+                "There is already a scheduled %s vaccination appointment for this "
+                "patient" % self.product_id.name
+            )
+
     @api.depends("state")
     def _compute_show_vaccine_wizard_button(self):
         for apt in self:
@@ -211,7 +235,12 @@ class VaccinationAppointment(models.Model):
     def action_confirm_appointment(self):
 
         date_range = []
-        for i in range(self.product_id.sisvac_dose_interval):
+        ctx = self.env.context
+        post_interval = int(ctx.get("dose", 1)) - 1
+        post_date = ctx.get("date", False)
+        post_vaccinator = ctx.get("vaccinator", False)
+        post_lot = ctx.get("lot", False)
+        for i in range(self.product_id.sisvac_dose_interval - post_interval):
             date = self.first_appointment_date if i == 0 else date_range[-1]
             date_range.append(
                 self._get_next_appointment_date(
@@ -224,11 +253,12 @@ class VaccinationAppointment(models.Model):
         if not date_range:
             raise UserError("%s vaccine has no dose interval" % self.product_id.name)
 
-        seq_code = "sisvac.appointment"
         self.write(
             {
                 "state": "scheduled",
-                "name": self.env["ir.sequence"].sudo().next_by_code(seq_code),
+                "name": self.env["ir.sequence"]
+                .sudo()
+                .next_by_code("sisvac.appointment"),
                 "next_appointment_date": date_range[0],
                 "application_ids": [
                     (
@@ -236,15 +266,30 @@ class VaccinationAppointment(models.Model):
                         0,
                         {
                             "partner_id": self.partner_id.id,
-                            "application_date": date,
-                            "state": "scheduled",
+                            "application_date": post_date if post_date else date,
+                            "state": "applied" if post_date else "scheduled",
                             "product_id": self.product_id.id,
+                            "lot_id": post_lot,
+                            "medic_partner_id": post_vaccinator,
                         },
                     )
                     for date in date_range
                 ],
             }
         )
+
+        # automatically set Appointment as Completed if have only one application
+        # and is already applied
+        if len(self.application_ids) == 1 and self.application_ids.filtered(
+            lambda app: app.state == "applied"
+        ):
+            self.write(
+                {
+                    "state": "completed",
+                    "last_appointment_date": self.first_appointment_date,
+                    "next_appointment_date": False,
+                }
+            )
 
     def action_apply_vaccine_wizard(self):
         application_id = self.env["sisvac.vaccine.application"].search(
