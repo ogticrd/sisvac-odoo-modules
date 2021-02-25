@@ -18,7 +18,7 @@ class Vaccination(http.Controller):
             {"country_states": country_states}
         )
 
-    @http.route('/sisvac/patient_api/<int:vat>', auth='none', cors="*")
+    @http.route('/sisvac/patient_api/<vat>', auth='none', cors="*")
     def get_patient_name(self, vat):
 
         content = self._get_patient_data(vat)

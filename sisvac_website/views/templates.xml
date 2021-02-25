@@ -90,7 +90,8 @@
                               <span class="">Sector</span>
                             </label>
                             <div class="col-sm">
-                              <input type="text" class="form-control" name="city" id="city" placeholder=""/>
+                              <input type="text" class="form-control" name="city" id="city" required="1"
+                               placeholder=""/>
                             </div>
                           </div>
                         </div>
@@ -101,7 +102,7 @@
                               <span class="">Provincia</span>
                             </label>
                             <div class="col-sm">
-                              <select name="state_id" class="form-control">
+                              <select name="state_id" class="form-control" required="1">
                                 <option value=""></option>
                                 <t t-foreach="country_states" t-as="state" t-key="state.id">
                                   <option t-att-value="state.id">
@@ -219,7 +220,7 @@
                             </label>
                             <div class="col-sm">
                               <input type="text" class="form-control" name="sisvac_emergency_contact_name" 
-                                      id="sisvac_emergency_contact_name" placeholder=""/>
+                                      id="sisvac_emergency_contact_name" placeholder="" required="1"/>
                             </div>
                           </div>
                         </div>
@@ -243,7 +244,7 @@
                             </label>
                             <div class="col-sm">
                               <input type="text" class="form-control" name="sisvac_emergency_contact_phone" 
-                                      id="sisvac_emergency_contact_phone" placeholder=""/>
+                                      id="sisvac_emergency_contact_phone" placeholder="" required="1"/>
                             </div>
                           </div>
                         </div>
@@ -254,7 +255,7 @@
                               <span class="">Parentesco</span>
                             </label>
                             <div class="col-sm">
-                              <select name="sisvac_emergency_contact_relationship" class="form-control">
+                              <select name="sisvac_emergency_contact_relationship" required="1" class="form-control">
                                 <option value=""></option>
                                 <option value="Abuelo/Abuela">Abuelo/Abuela</option>
                                 <option value="Padre/Madre">Padre/Madre</option>
