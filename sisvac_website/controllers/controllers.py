@@ -51,8 +51,6 @@ class Vaccination(http.Controller):
             "sisvac_emergency_contact_phone", "sisvac_emergency_contact_relationship"
         ]
         partner = request.env["res.partner"].sudo().search([("vat", "=", post.get("vat"))], limit=1)
-        if not partner:
-            return
 
         for f, v in post.items():
             if v and f in partner_allow_data:
@@ -60,6 +58,11 @@ class Vaccination(http.Controller):
 
         if partner_data:
             partner_data.update({"country_id": 61, "sisvac_pre_registered": True})
-            partner.sudo().update(partner_data)
+
+            if partner:
+                partner.sudo().update(partner_data)
+            else:
+                partner_data.update({"vat": post.get("vat")})
+                request.env["res.partner"].sudo().create(partner_data)
 
         return redirect("/contactus-thank-you")
