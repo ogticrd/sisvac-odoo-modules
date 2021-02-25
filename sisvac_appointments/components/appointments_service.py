@@ -2,6 +2,10 @@ import json
 from odoo.http import request
 from odoo.addons.component.core import Component
 
+from .common import SisvacComponentsCommon
+
+ResponseWrapper = SisvacComponentsCommon.response_wrapper
+
 
 class AppointmentsService(Component):
     _inherit = "base.rest.service"
@@ -14,8 +18,10 @@ class AppointmentsService(Component):
 
     def get(self, _id):
         appointment = self.env["sisvac.vaccination.appointment"].browse(_id)
-        return request.make_response(
-            json.dumps(appointment._get_appointment_data()),
+        return ResponseWrapper(
+            success=True,
+            status=200,
+            data=appointment._get_appointment_data(),
             headers=[("Content-Type", "application/json")],
         )
 
@@ -26,7 +32,9 @@ class AppointmentsService(Component):
             appointments = appointment_obj.search([], limit=int(params["limit"]))
         else:
             appointments = appointment_obj.search([])
-        return request.make_response(
-            json.dumps([apt._get_appointment_data() for apt in appointments]),
+        return ResponseWrapper(
+            success=True,
+            status=200,
+            data=[apt._get_appointment_data() for apt in appointments],
             headers=[("Content-Type", "application/json")],
         )
