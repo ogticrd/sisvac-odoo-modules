@@ -65,7 +65,6 @@ class Vaccination(http.Controller):
     def _get_patient_data(self, vat):
         patient_api = "https://citizens-api.digital.gob.do/api/citizens/basic-data?key=AIzaSyCTh4hHckCIKX1DG_Qmis0KAcrBE8QVpq0=&id="
 
-        return {"name": "***Kevin Jimenez"}
         try:
             req = requests.get(patient_api + str(vat))
             if req.status_code != requests.codes.ok:
