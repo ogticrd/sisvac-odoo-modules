@@ -9,11 +9,14 @@ odoo.define('sisvac.partner_form', function (require) {
     }
     let patient_api = "/sisvac/patient_api/"
     let $name = $("#welcome_name");
-    let $patient_form = $(".patient_form");
-    let $submit_button = $(".sisvac_patient_submit");
     let $form_body = $(".form_body");
-    let $hidden_vat = $("#vat");
     let $vat_error_message = $(".vat_error_message");
+    
+    let $patient_form = $(".patient_form");
+    let $phone_field = $("#phone");
+    let $mobile_field = $("#mobile");
+    let $submit_button = $(".sisvac_patient_submit");
+    let $hidden_vat = $("#vat");
 
     $partner_vat.on('keyup', function (ev) {
         let partner_vat = $partner_vat.val();
@@ -26,6 +29,7 @@ odoo.define('sisvac.partner_form', function (require) {
             url: patient_api + partner_vat,
             dataType: 'json',
             success: function (data) {
+                $vat_error_message.addClass("d-none");
                 $partner_vat.prop("disabled", true);
                 $hidden_vat.val($partner_vat.val());
                 $form_body.removeClass("d-none");

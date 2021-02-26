@@ -36,7 +36,7 @@ class Vaccination(http.Controller):
 
         partner_data = {}
         partner_allow_data = [
-            "phone", "mobile", "state_id", "city", "email",
+            "phone", "mobile", "state_id", "city", "email", "street",
             "sisvac_has_hypertension", "sisvac_has_diabetes", "sisvac_has_obesity",
             "sisvac_has_asthma", "sisvac_has_cardiovascular", "sisvac_has_renal_insufficiency",
             "sisvac_has_discapacity", "sisvac_health_notes",

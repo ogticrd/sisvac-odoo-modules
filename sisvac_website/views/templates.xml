@@ -18,11 +18,9 @@
                   <br/>
                   <span style="color: rgb(0, 23, 51); font-size: 36px;">¡Se el primero en vacunarte!</span>
                 </h1>
-                <p class="lead" style="text-align: center;">
-                  <span style="text-align: left; white-space: pre-wrap;">Pre-registrate y pronto te informaremos cómo realizar </span>
-                  <br/>
-                  <span style="text-align: left; white-space: pre-wrap;">la cita para vacunación.</span>
-                  <br/>
+                <p class="registry_copy">
+                  Pre-registrate y pronto te informaremos cómo realizar <br/>
+                  la cita para vacunación.
                 </p>
                 <section class="pt16 pb16 o_colored_level">
                   <div class="container">
@@ -51,8 +49,9 @@
                         </div>
 
                         <div class="form-group col-12">
-                          <label class="" for="mobile">Celular</label>
-                          <input type="text" class="form-control" name="mobile" id="mobile" placeholder="809-000-0000"/>
+                          <label class="" for="mobile">Celular *</label>
+                          <input type="text" class="form-control" name="mobile" id="mobile" required="required"
+                                  placeholder="809-000-0000"/>
                         </div>
 
                         <div class="form-group col-12">
@@ -61,15 +60,21 @@
                         </div>
 
                         <div class="form-group col-12">
-                          <label class="" for="city">Sector</label>
-                          <input type="text" class="form-control" name="city" id="city" required="required"
-                               placeholder="Ensanche..."/>
+                          <label class="" for="street">Dirección *</label>
+                          <input type="text" class="form-control" name="street" id="street" required="required"
+                               placeholder="Calle ..."/>
                         </div>
 
                         <div class="form-group col-12">
-                          <label class="" for="state_id">Provincia</label>
+                          <label class="" for="city">Sector *</label>
+                          <input type="text" class="form-control" name="city" id="city" required="required"
+                               placeholder="Ensanche ..."/>
+                        </div>
+
+                        <div class="form-group col-12">
+                          <label class="" for="state_id">Provincia *</label>
                           <select name="state_id" class="form-control" required="required">
-                            <option value=""></option>
+                            <option value="">Seleccione una provincia</option>
                             <t t-foreach="country_states" t-as="state" t-key="state.id">
                               <option t-att-value="state.id">
                                 <t t-esc="state.name" />
@@ -83,7 +88,7 @@
                             <input type="checkbox" class="form-control inner_checkbox" name="sisvac_has_discapacity" 
                                     id="sisvac_has_discapacity"/>
                             <label class="col-form-label col-sm-auto" for="sisvac_has_discapacity">
-                              Condición de Discapacidad
+                              Condición de Discapacidad *
                             </label>
                           </div>
                         </div>
@@ -155,7 +160,7 @@
 
                         <div class="form-group col-12">
                           <label class="" for="sisvac_emergency_contact_name">
-                            Nombre
+                            Nombre *
                           </label>
                           <input type="text" class="form-control" name="sisvac_emergency_contact_name" 
                                   id="sisvac_emergency_contact_name" placeholder="Nombre y Apellidos" required="required"/>
@@ -171,7 +176,7 @@
 
                         <div class="form-group col-12">
                           <label class="" for="sisvac_emergency_contact_phone">
-                            Teléfono
+                            Teléfono *
                           </label>
                           <input type="text" class="form-control" name="sisvac_emergency_contact_phone" 
                                   id="sisvac_emergency_contact_phone" placeholder="809-000-0000" required="required"/>
@@ -179,10 +184,10 @@
 
                         <div class="form-group col-12">
                           <label class="" for="sisvac_emergency_contact_relationship">
-                            Parentesco
+                            Parentesco *
                           </label>
                           <select name="sisvac_emergency_contact_relationship" required="required" class="form-control">
-                            <option value=""></option>
+                            <option value="">Seleccione un parentesco</option>
                             <option value="Abuelo/Abuela">Abuelo/Abuela</option>
                             <option value="Padre/Madre">Padre/Madre</option>
                             <option value="Tio/Tia">Tio/Tia</option>
