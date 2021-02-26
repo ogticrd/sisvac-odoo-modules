@@ -1,5 +1,6 @@
 import json
 import requests
+import re
 from werkzeug.utils import redirect
 
 from odoo import http
@@ -63,10 +64,11 @@ class Vaccination(http.Controller):
         return redirect("/contactus-thank-you")
 
     def _get_patient_data(self, vat):
+        clean_vat = re.sub("[^0-9]", "", vat)
         patient_api = "https://citizens.api.digital.gob.do/api/citizens/basic-data?key=AIzaSyBrjBWquMuEZ1nUZd4-O5cwNVzOOitiqls=&id="
 
         try:
-            req = requests.get(patient_api + str(vat))
+            req = requests.get(patient_api + clean_vat)
             if req.status_code != requests.codes.ok:
                 return {"message": "The request has the following status code: " + req.status_code}
         except requests.exceptions.ConnectionError as e:

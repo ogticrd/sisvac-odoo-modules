@@ -11,6 +11,7 @@ odoo.define('sisvac.partner_form', function (require) {
     let $name = $("#welcome_name");
     let $form_body = $(".form_body");
     let $vat_error_message = $(".vat_error_message");
+    let $already_registered_message = $(".already_registered_message");
     
     let $patient_form = $(".patient_form");
     let $phone_field = $("#phone");
@@ -20,7 +21,7 @@ odoo.define('sisvac.partner_form', function (require) {
 
     $partner_vat.on('keyup', function (ev) {
         let partner_vat = $partner_vat.val();
-        if (partner_vat.length !== 11) {
+        if (partner_vat.replace(/\D/g,'').length !== 11) {
             return;
         }
         console.count("Partner Vat");
@@ -29,11 +30,13 @@ odoo.define('sisvac.partner_form', function (require) {
             url: patient_api + partner_vat,
             dataType: 'json',
             success: function (data) {
-                $vat_error_message.addClass("d-none");
+                
                 $partner_vat.prop("disabled", true);
                 $hidden_vat.val($partner_vat.val());
-                $form_body.removeClass("d-none");
                 $name.html(data.patient_name);
+                
+                hide_error_messages();
+                activate_form();
             },
             error: function (xhr, ajaxOptions, thrownError) {
                 $vat_error_message.removeClass("d-none");
@@ -48,5 +51,15 @@ odoo.define('sisvac.partner_form', function (require) {
             return false;
         }
     });
+
+    function hide_error_messages() {
+        $already_registered_message.addClass("d-none");
+        $vat_error_message.addClass("d-none");
+    }
+
+    function activate_form() {
+        $form_body.removeClass("d-none");
+    }
+    
 
 });

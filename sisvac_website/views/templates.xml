@@ -29,7 +29,8 @@
 
                         <div class="form-group">
                           <label class="" for="partner_vat">Cédula *</label>
-                          <input type="text" class="form-control" name="partner_vat" required="required" placeholder="000-0000000-0" id="partner_vat"/>
+                          <input type="text" class="form-control" name="partner_vat" required="required" id="partner_vat"
+                                  placeholder="000-0000000-0"/>
                           <input type="hidden" name="vat" t-att-value="vat" id="vat"/>
                         </div>
 
@@ -39,7 +40,7 @@
                         <hr/>
 
                         <p class="welcome_message">
-                          <span>Bienvenido <span id="welcome_name"></span></span><br/> 
+                          <span>Hola <span id="welcome_name"></span>!</span><br/> 
                           Favor suministrar estas importantes informaciones.
                         </p>
 
@@ -84,11 +85,21 @@
                         </div>
 
                         <div class="form-group col-12">
+                          <label class="col-form-label" for="">
+                            Condición de Discapacidad *
+                          </label>
                           <div class="row s_col_no_resize s_col_no_bgcolor">
-                            <input type="checkbox" class="form-control inner_checkbox" name="sisvac_has_discapacity" 
-                                    id="sisvac_has_discapacity"/>
+                            <input type="radio" value="No" class="form-control inner_checkbox" name="sisvac_has_discapacity"
+                                    required="required"/>
                             <label class="col-form-label col-sm-auto" for="sisvac_has_discapacity">
-                              Condición de Discapacidad *
+                              No
+                            </label>
+                          </div>
+                          <div class="row s_col_no_resize s_col_no_bgcolor">
+                            <input type="radio" value="Si" class="form-control inner_checkbox" name="sisvac_has_discapacity"
+                                    required="required"/>
+                            <label class="col-form-label col-sm-auto" for="sisvac_has_discapacity">
+                              Si
                             </label>
                           </div>
                         </div>
@@ -219,6 +230,13 @@
                     estaremos trabajando para solucionar este inconveniente.
                   </p>
                   <p>Favor intentar en 24 horas.</p>
+                </div>
+                <div class="already_registered_message d-none">
+                  <p>
+                    Esta persona ya está registrada en el listado, al momento de estar habilitado/a 
+                    para vacunación le estaremos contactando vía telefónica y por correo electrónico, 
+                    para darle más detalles de su cita.
+                  </p>
                 </div>
               </div>
             </div>
