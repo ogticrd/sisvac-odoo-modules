@@ -21,8 +21,11 @@ class Vaccination(http.Controller):
     @http.route('/sisvac/patient_api/<vat>', auth='none', cors="*")
     def get_patient_name(self, vat):
 
-        content = self._get_patient_data(vat)
-        patient_name = content.get("name").split(" ")[0]
+        patient_display_name = self._get_patient_data(vat).get("name", False)
+        if not patient_display_name:
+            return {"message": "An error has been occurred"}
+
+        patient_name = patient_display_name.split(" ")[0]
 
         return json.dumps({"patient_name": patient_name})
 
@@ -60,15 +63,16 @@ class Vaccination(http.Controller):
         return redirect("/contactus-thank-you")
 
     def _get_patient_data(self, vat):
-        patient_api = "https://citizens-api.digital.gob.do/api/citizens/basic-data?id="
+        patient_api = "https://citizens-api.digital.gob.do/api/citizens/basic-data?key=AIzaSyCTh4hHckCIKX1DG_Qmis0KAcrBE8QVpq0=&id="
 
+        return {"name": "***Kevin Jimenez"}
         try:
             req = requests.get(patient_api + str(vat))
             if req.status_code != requests.codes.ok:
-                return False
+                return {"message": "The request has the following status code: " + req.status_code}
         except requests.exceptions.ConnectionError as e:
-            return False
+            return {"message": "The request has the following error message: " + str(e)}
         except requests.exceptions.Timeout as e:
-            return False
+            return {"message": "The request has the following error message: " + str(e)}
 
         return req.json()
