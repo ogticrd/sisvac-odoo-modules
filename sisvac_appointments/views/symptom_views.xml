@@ -36,7 +36,7 @@
     <menuitem
         id="sisvac_secondary_menu_symptoms"
         name="Symptoms"
-        sequence="50"
+        sequence="60"
         parent="sisvac_appointments.menu_sisvac_root"
         action="action_sisvac_symptoms"/>
 </odoo>

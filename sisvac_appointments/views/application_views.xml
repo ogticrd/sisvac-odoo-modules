@@ -64,7 +64,7 @@
     <menuitem
         id="sisvac_application_menu"
         name="Vaccine Applications"
-        sequence="40"
+        sequence="20"
         parent="sisvac_appointments.vaccination_appointment_menu_root"
         action="sisvac_application_action"
     />

@@ -106,14 +106,14 @@
     <menuitem
         id="vaccination_appointment_menu_root"
         name="Appointments"
-        sequence="40"
+        sequence="10"
         parent="menu_sisvac_root"
     />
 
     <menuitem
         id="vaccination_appointment_menu"
         name="Appointments"
-        sequence="40"
+        sequence="10"
         parent="vaccination_appointment_menu_root"
         action="vaccination_appointment_action"
     />

@@ -53,7 +53,7 @@
     <menuitem
         id="sisvac_secondary_menu_consent"
         name="Consents"
-        sequence="50"
+        sequence="40"
         parent="sisvac_appointments.menu_sisvac_root"
         action="action_vaccination_sisvac_consent"/>
 </odoo>
