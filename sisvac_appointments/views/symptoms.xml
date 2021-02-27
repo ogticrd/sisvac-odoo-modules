@@ -1,0 +1,45 @@
+<odoo>
+    <data>
+        <record id="sisvac_symptoms_tree" model="ir.ui.view">
+            <field name="name">SISVAC Symptoms Tree</field>
+            <field name="model">sisvac.symptom</field>
+            <field name="arch" type="xml">
+                <tree string="Symptoms" editable="top">
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+        <record id="sisvac_symptoms_form" model="ir.ui.view">
+            <field name="name">SISVAC Symptoms Form</field>
+            <field name="model">sisvac.symptom</field>
+            <field name="arch" type="xml">
+                <form string="Symptoms">
+                    <sheet>
+                        <div class="oe_title">
+                            <label for="name"/>
+                            <h1>
+                                <field name="name"/>
+                            </h1>
+                        </div>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="action_sisvac_symptoms" model="ir.actions.act_window">
+            <field name="name">Symptoms</field>
+            <field name="res_model">sisvac.symptom</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <menuitem
+            id="sisvac_primary_menu_symptoms"
+            name="Symptoms"/>
+        
+        <menuitem
+            id="sisvac_secondary_menu_symptoms"
+            name="Symptoms"
+            parent="sisvac_primary_menu_symptoms"
+            action="action_sisvac_symptoms"/>
+    </data>
+</odoo>

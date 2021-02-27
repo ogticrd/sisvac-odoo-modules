@@ -1,0 +1,67 @@
+.form_box {
+    padding: 0 6em;
+}
+
+.registry_copy {
+    text-align: center;
+    font-size: 1.1em;
+}
+
+.patient_form {
+    color: rgb(13, 65, 121);
+    font-size: .8em;
+
+    h3 {
+        color: rgb(47, 96, 148);
+        font-size: 1.1em;
+        margin: 1em;
+        text-transform: uppercase;
+    }
+
+    .welcome_message {
+        font-size: 1.1em;
+        margin: 1em;
+
+        span {
+            font-weight: bold;
+        }
+    }
+
+    #welcome_name {
+        text-transform: uppercase;
+    }
+
+    .inner_checkbox {
+        width: auto;
+        margin-left: 1em;
+    }
+
+    .form-control{
+        font-size: .9rem;
+        color: #747f8a;
+
+        &::placeholder {
+            color: rgb(159, 171, 185);
+            opacity: 1; /* Firefox */
+        }
+    }
+
+    .submit_patient {
+        background-color: #0e4189;
+        border-color: #111b40;
+        color: #e3eef5;
+        width: 100%;
+
+        &:hover {
+            background-color: #2d65b4;
+            border-color: #152f8f;
+        }
+    }
+}
+
+.vat_error_message {
+    border: 1px solid rgb(67, 126, 175);
+    font-size: .9em;
+    padding: 1.2em;
+    text-align: center;
+}
