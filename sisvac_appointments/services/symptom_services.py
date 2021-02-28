@@ -6,7 +6,7 @@ class SymptomService(Component):
     _inherit = ["base.rest.service", "sisvac.components.common"]
     _name = "symptoms.service"
     _usage = "symptoms"
-    _collection = "sisvac.services"
+    _collection = "sisvac.private.services"
     _description = """
         Symptom Related models API Services
     """

@@ -7,7 +7,7 @@ class ApplicationService(Component):
     _inherit = ["base.rest.service", "sisvac.components.common"]
     _name = "application.service"
     _usage = "application"
-    _collection = "sisvac.services"
+    _collection = "sisvac.private.services"
     _description = """
         Vaccines Application Related models API Services
     """

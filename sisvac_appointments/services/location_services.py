@@ -5,7 +5,7 @@ class LocationService(Component):
     _inherit = ["base.rest.service", "sisvac.components.common"]
     _name = "consent.service"
     _usage = "locations"
-    _collection = "sisvac.services"
+    _collection = "sisvac.private.services"
     _description = """
         Locations Related models API Services
     """

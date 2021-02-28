@@ -6,7 +6,7 @@ class AppointmentsService(Component):
     _inherit = ["base.rest.service", "sisvac.components.common"]
     _name = "appointments.service"
     _usage = "appointments"
-    _collection = "sisvac.services"
+    _collection = "sisvac.private.services"
     _description = """
         Appointments Related models API Services
     """

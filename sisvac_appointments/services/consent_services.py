@@ -6,7 +6,7 @@ class ConsentService(Component):
     _inherit = ["base.rest.service", "sisvac.components.common"]
     _name = "consent.service"
     _usage = "consents"
-    _collection = "sisvac.services"
+    _collection = "sisvac.private.services"
     _description = """
         Consent Related models API Services
     """

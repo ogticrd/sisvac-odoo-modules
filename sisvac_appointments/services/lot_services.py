@@ -6,7 +6,7 @@ class LotService(Component):
     _inherit = ["base.rest.service", "sisvac.components.common"]
     _name = "consent.service"
     _usage = "lots"
-    _collection = "sisvac.services"
+    _collection = "sisvac.private.services"
     _description = """
         Lots Related models API Services
     """
