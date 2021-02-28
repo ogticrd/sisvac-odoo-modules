@@ -1,13 +1,9 @@
 from odoo import fields
 from odoo.addons.component.core import Component
 
-from .common import SisvacComponentsCommon
-
-ResponseWrapper = SisvacComponentsCommon.response_wrapper
-
 
 class LotService(Component):
-    _inherit = "base.rest.service"
+    _inherit = ["base.rest.service", "sisvac.components.common"]
     _name = "consent.service"
     _usage = "lots"
     _collection = "sisvac.services"
@@ -17,7 +13,7 @@ class LotService(Component):
 
     def get(self, _id):
         lots = self.env["stock.production.lot"].search([("product_id", "=", _id)])
-        return ResponseWrapper(
+        return self.response_wrapper(
             success=True,
             status=200,
             data=[

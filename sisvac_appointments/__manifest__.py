@@ -12,6 +12,7 @@
         "stock",
         "calendar",
         "base_rest",
+        "base_rest_datamodel",
         "partner_contact_gender",
         "partner_contact_age_range",
     ],

@@ -1,14 +1,15 @@
 import json
-from odoo import models
+from odoo import api
 from odoo.http import Response
+from odoo.addons.component.core import Component
 
 
-class SisvacComponentsCommon(models.AbstractModel):
+class SisvacComponentsCommon(Component):
     _name = "sisvac.components.common"
     _description = "SISVAC Components Common"
 
-    @staticmethod
-    def response_wrapper(success, status, data=None, message="", headers=None):
+    @api.model
+    def response_wrapper(self, success, status, data=None, message="", headers=None):
 
         return Response(
             json.dumps(

@@ -1,13 +1,10 @@
 from odoo import fields
+from odoo.addons.base_rest.components.service import to_int
 from odoo.addons.component.core import Component
-
-from .common import SisvacComponentsCommon
-
-ResponseWrapper = SisvacComponentsCommon.response_wrapper
 
 
 class ApplicationService(Component):
-    _inherit = "base.rest.service"
+    _inherit = ["base.rest.service", "sisvac.components.common"]
     _name = "application.service"
     _usage = "application"
     _collection = "sisvac.services"
@@ -17,27 +14,35 @@ class ApplicationService(Component):
 
     def get(self, _id):
         application = self.env["sisvac.vaccine.application"].browse(_id)
-        return ResponseWrapper(
+        return self.response_wrapper(
             success=True,
             status=200,
             data=application._get_application_data(),
             headers=[("Content-Type", "application/json")],
         )
 
-    def search(self):
-        params = self.work.request.params
+    def search(self, limit):
         application_obj = self.env["sisvac.vaccine.application"]
-        if "limit" in params:
-            applications = application_obj.search([], limit=int(params["limit"]))
-        else:
-            applications = application_obj.search([])
 
-        return ResponseWrapper(
+        if not limit:
+            applications = application_obj.search([])
+        else:
+            applications = application_obj.search([], limit=limit)
+
+        return self.response_wrapper(
             success=True,
             status=200,
             data=[app._get_application_data() for app in applications],
             headers=[("Content-Type", "application/json")],
         )
+
+    def _validator_search(self):
+        return {
+            "limit": {
+                "type": "integer",
+                "coerce": to_int,
+            }
+        }
 
     def _parse_date(self, params):
 
@@ -45,7 +50,7 @@ class ApplicationService(Component):
             date_string = params["date"] + " " + params["hour"]
             date = fields.Datetime.from_string(date_string)
         except ValueError:
-            return ResponseWrapper(
+            return self.response_wrapper(
                 success=False,
                 status=400,
                 headers=[("Content-Type", "application/json")],
@@ -54,30 +59,7 @@ class ApplicationService(Component):
             )
         return date
 
-    def create(self):
-        params = self.work.request.params
-
-        required_fields = [
-            "cedula",
-            "name",
-            "vaccine",
-            "vaccinator",
-            "lot",
-            "location",
-            "date",
-            "hour",
-            "dose",
-        ]
-        missing_fields = [f for f in required_fields if f not in params]
-
-        if missing_fields:
-            return ResponseWrapper(
-                success=False,
-                status=400,
-                headers=[("Content-Type", "application/json")],
-                message="%s params required for application create"
-                % ", ".join(missing_fields),
-            )
+    def create(self, **params):
 
         vat = params["cedula"]
         Partner = self.env["res.partner"]
@@ -89,7 +71,7 @@ class ApplicationService(Component):
 
         vaccinator_id = Partner.browse(int(params["vaccinator"]))
         if not vaccinator_id:
-            return ResponseWrapper(
+            return self.response_wrapper(
                 success=False,
                 status=400,
                 headers=[("Content-Type", "application/json")],
@@ -98,7 +80,7 @@ class ApplicationService(Component):
 
         lot_id = self.env["stock.production.lot"].browse(int(params["lot"]))
         if not lot_id:
-            return ResponseWrapper(
+            return self.response_wrapper(
                 success=False,
                 status=400,
                 headers=[("Content-Type", "application/json")],
@@ -108,7 +90,7 @@ class ApplicationService(Component):
         product = params["vaccine"]
         product_id = self.env["product.product"].browse(int(product))
         if not product_id:
-            return ResponseWrapper(
+            return self.response_wrapper(
                 success=False,
                 status=400,
                 headers=[("Content-Type", "application/json")],
@@ -118,7 +100,7 @@ class ApplicationService(Component):
         location = params["location"]
         location_id = self.env["stock.location"].browse(int(location))
         if not location_id:
-            return ResponseWrapper(
+            return self.response_wrapper(
                 success=False,
                 status=400,
                 headers=[("Content-Type", "application/json")],
@@ -163,7 +145,7 @@ class ApplicationService(Component):
                 limit=1,
             )
             if not application_id:
-                return ResponseWrapper(
+                return self.response_wrapper(
                     success=False,
                     status=400,
                     headers=[("Content-Type", "application/json")],
@@ -180,10 +162,27 @@ class ApplicationService(Component):
             )
             application_id.apply()
 
-            return ResponseWrapper(
+            return self.response_wrapper(
                 success=True,
                 status=200,
                 headers=[("Content-Type", "application/json")],
                 message="Appointment %s Vaccine Application update"
                 % appointment_id.name,
             )
+
+    def _validator_create(self):
+        return {
+            "cedula": {"type": "string", "required": True},
+            "name": {"type": "string", "required": True},
+            "vaccine": {"type": "integer", "required": True, "coerce": to_int},
+            "vaccinator": {
+                "type": "integer",
+                "required": True,
+                "coerce": to_int,
+            },
+            "lot": {"type": "integer", "required": True, "coerce": to_int},
+            "location": {"type": "integer", "required": True, "coerce": to_int},
+            "date": {"type": "string", "required": True},
+            "hour": {"type": "string", "required": True},
+            "dose": {"type": "integer", "required": True, "coerce": to_int},
+        }
