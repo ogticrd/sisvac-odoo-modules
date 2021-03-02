@@ -9,7 +9,7 @@ from odoo.http import request
 
 class Vaccination(http.Controller):
 
-    @http.route('/registry', type='http', auth='public', methods=['GET'], website=True)
+    @http.route('/registro-covid', type='http', auth='public', methods=['GET'], website=True)
     def website_appointment(self, **kwargs):
         dr_country_id = 61
         country_states = request.env['res.country.state'].search([("country_id", "=", dr_country_id)])
