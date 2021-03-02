@@ -12,6 +12,7 @@
         "stock",
         "calendar",
         "base_rest",
+        "base_rest_datamodel",
         "partner_contact_gender",
         "partner_contact_age_range",
     ],
@@ -24,6 +25,7 @@
         "views/partner_views.xml",
         "views/symptom_views.xml",
         "views/consent_views.xml",
+        "views/stock_views.xml",
     ],
     "demo": [
         "demo/product_demo_data.xml",
