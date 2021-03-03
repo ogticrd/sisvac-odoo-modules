@@ -26,6 +26,7 @@
         "views/symptom_views.xml",
         "views/consent_views.xml",
         "views/stock_views.xml",
+        "views/product_views.xml",
     ],
     "demo": [
         "demo/product_demo_data.xml",
