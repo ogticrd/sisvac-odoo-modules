@@ -16,7 +16,7 @@ on:
       - '[0-9]+.0'
 
 env:
-  PROJECT_NAME: precitas
+  PROJECT_NAME: sisvac-odoo
   REGISTRY_BASE: us-east1-docker.pkg.dev/${{ secrets.PROJECT_ID }}
 
 jobs:
@@ -168,7 +168,7 @@ jobs:
 
     steps:
     - name: Inject slug/short variables
-      uses: rlespinasse/github-slug-action@v2.x
+      uses: rlespinasse/github-slug-action@v3.x
 
     - name: Download repository results
       uses: actions/download-artifact@v2
