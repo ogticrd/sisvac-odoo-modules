@@ -52,6 +52,12 @@ jobs:
         path: odoo-cloud-platform
         ref: '14.0'
 
+    - name: OCA rest-framework
+      uses: actions/checkout@v2
+      with:
+        repository: OCA/rest-framework
+        path: rest-framework
+        ref: '14.0'
 
     - name: OCA partner-contact
       uses: actions/checkout@v2
