@@ -175,7 +175,7 @@ jobs:
       with:
         name: modules
 
-    - run: unzip modules.zip && ls && ls modules
+    - run: unzip modules.zip && ls
 
     -  name: Set up Docker Buildx
        uses: docker/setup-buildx-action@v1
