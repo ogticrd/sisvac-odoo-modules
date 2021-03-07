@@ -1,15 +1,9 @@
-name: Unit Tests
+name: Staging Deploy
 
 on:
-  push:
+  pull_request:
     branches:
-      - '[0-9]+.0-dev-*'
-    paths:
-      - '**/src/**'
-      - '**/i18n/**'
-      - '**.py'
-      - '**.xml'
-      - '**.yaml'
+      - '[0-9]+.0-staging-*'
 
 env:
   PROJECT_NAME: sisvac-odoo
@@ -113,53 +107,88 @@ jobs:
         name: modules
         path: modules.zip
 
-  test:
-    name: Test Modules
+  build:
+    name: Build & Push to GCR
     needs: ['dependencies']
     runs-on: ubuntu-latest
-    container:
-      image: gcr.io/iterativo/dockerdoo:14.0
-      options: -t --user root
-      volumes:
-        - ${{ github.workspace }}:/workspace
-
-    services:
-      db:
-        image: postgres:11
-        env:
-          POSTGRES_DB: postgres
-          POSTGRES_USER: odoo
-          POSTGRES_PASSWORD: odoo
-        # needed because the postgres container does not provide a healthcheck
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
 
     steps:
-    - name: Download modules results
+    - name: Inject slug/short variables
+      uses: rlespinasse/github-slug-action@v3.x
+
+    - name: Download repository results
       uses: actions/download-artifact@v2
       with:
         name: modules
 
-    - run: unzip modules.zip
+    - run: unzip modules.zip && ls
 
-    - name: chown home for pypy
-      uses: docker://gcr.io/iterativo/dockerdoo:14.0
-      with:
-        args: sudo chown -R 1000:1000 /github/home
+    -  name: Set up Docker Buildx
+       uses: docker/setup-buildx-action@v1
 
-    - name: Run odoo
-      uses: docker://gcr.io/iterativo/dockerdoo:14.0
+    - name: Login to GAR
+      uses: docker/login-action@v1
       with:
-        args: odoo
+        registry: ${{ env.REGISTRY_BASE}}
+        username: _json_key
+        password: ${{ secrets.GAR_JSON_KEY }}
+
+    - name: Build and push
+      id: docker_build
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        file: ${{ env.GITHUB_REPOSITORY_SLUG_URL }}/Dockerfile
+        push: true
+        tags: ${{ env.REGISTRY_BASE}}/${{env.PROJECT_NAME}}/${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG }}:${{ env.GITHUB_HEAD_REF_SLUG_URL }}
+
+  deploy:
+    name: GKE Deploy
+    needs: ['dependencies', 'build']
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Inject slug/short variables
+      uses: rlespinasse/github-slug-action@v3.x
+
+    - name: K8s Template
+      uses: actions/checkout@v2
+      with:
+        repository: opticrd/sisvac-odoo-gke.git
+        path: sisvac-odoo-gke
+        token: ${{ secrets.ACTIONS_PAT }}
+        ref: master
+
+    - name: Set up Kustomize
+      run: |
+        curl -sfLo kustomize https://github.com/kubernetes-sigs/kustomize/releases/download/v3.1.0/kustomize_3.1.0_linux_amd64
+        chmod u+x ./kustomize
+        ./kustomize build sisvac-odoo-gke/deployments/odoo/14.0/dev -o deployment.yaml.tmpl
+    - name: Render Deployment YAML
+      uses: nowactions/envsubst@v1
+      with:
+        input: ./deployment.yaml.tmpl
+        output: ./deployment.yaml
       env:
-        RUN_TESTS: '1'
-        PIP_AUTO_INSTALL: '1'
-        LOG_LEVEL: test
-        WITHOUT_DEMO: 'False'
-        EXTRA_MODULES: ${{ needs.dependencies.outputs.get_modules }}
-        ODOO_EXTRA_ADDONS: /github/workspace
+        ENV: dev
+        # Modules to Install
+        EXTRA_MODULES: ${{ needs.dependencies.outputs.get_modules }},${{ env.REQUIRED_MODULES }}
+        # Image to Deploy
+        PROJECT_ID: ${{ secrets.PROJECT_ID }}
+        REPO_NAME: ${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG }}
+        BRANCH_NAME: ${{ env.GITHUB_HEAD_REF_SLUG_URL }}
+        # URL to acccess
+        REPO_URL: ${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG }}
+        BRANCH_URL: ${{ env.GITHUB_HEAD_REF_SLUG_URL }}
+
+    # Get the GKE credentials so we can deploy to the cluster
+    - uses: google-github-actions/get-gke-credentials@v0.2.1
+      with:
+        cluster_name: ${{ secrets.GKE_CLUSTER }}
+        location: ${{ secrets.GKE_ZONE }}
+        credentials: ${{ secrets.GKE_SA_KEY }}
+        project_id: ${{ secrets.PROJECT_ID }}
+
+    - name: Deploy
+      run: |
+        kubectl apply -f deployment.yaml
