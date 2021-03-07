@@ -158,7 +158,7 @@ jobs:
         repository: opticrd/sisvac-odoo-gke.git
         path: sisvac-odoo-gke
         token: ${{ secrets.ACTIONS_PAT }}
-        ref: master
+        ref: main
 
     # Get the GKE credentials so we can deploy to the cluster
     - uses: google-github-actions/get-gke-credentials@v0.2.1
