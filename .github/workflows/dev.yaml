@@ -9,7 +9,7 @@ on:
       - '**/i18n/**'
       - '**.py'
       - '**.xml'
-      - '**.yaml'
+      - '**.csv'
 
 env:
   PROJECT_NAME: sisvac-odoo
