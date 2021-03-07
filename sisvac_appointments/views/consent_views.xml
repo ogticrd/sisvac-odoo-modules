@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="sisvac_vaccination_consent_tree_view" model="ir.ui.view">
+        <field name="name">sisvac.vaccination.consent.tree.view</field>
+        <field name="model">sisvac.vaccination.consent</field>
+        <field name="arch" type="xml">
+            <tree string="Consent">
+                <field name="date"/>
+                <field name="partner_id"/>
+                <field name="patient_signature"/>
+                <field name="has_covid"/>
+                <field name="is_pregnant"/>
+                <field name="had_fever"/>
+                <field name="is_vaccinated"/>
+                <field name="had_reactions"/>
+                <field name="is_allergic"/>
+                <field name="is_medicated"/>
+                <field name="had_transplants"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="sisvac_vaccination_consent_form_view" model="ir.ui.view">
+        <field name="name">sisvac.vaccination.consent.form.view</field>
+        <field name="model">sisvac.vaccination.consent</field>
+        <field name="arch" type="xml">
+            <form string="consent">
+                <sheet>
+                    <group>
+                        <field name="date"/>
+                        <field name="partner_id"/>
+                        <field name="patient_signature"/>
+                        <field name="has_covid"/>
+                        <field name="is_pregnant"/>
+                        <field name="had_fever"/>
+                        <field name="is_vaccinated"/>
+                        <field name="had_reactions"/>
+                        <field name="is_allergic"/>
+                        <field name="is_medicated"/>
+                        <field name="had_transplants"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_vaccination_sisvac_consent" model="ir.actions.act_window">
+        <field name="name">Consent</field>
+        <field name="res_model">sisvac.vaccination.consent</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem
+        id="sisvac_secondary_menu_consent"
+        name="Consents"
+        sequence="40"
+        parent="sisvac_appointments.menu_sisvac_root"
+        action="action_vaccination_sisvac_consent"/>
+</odoo>

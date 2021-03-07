@@ -1,0 +1,255 @@
+<odoo>
+  <data>
+    <record id="sisvac_website_menu_vaccination" model="website.menu">
+      <field name="name">Registro Covid</field>
+      <field name="url">/registro-covid</field>
+      <field name="parent_id" ref="website.main_menu"/>
+    </record>
+
+    <template id="sisvac_vaccination_website_form" name="Sisvac Vaccination Website Form">
+      <t t-call="website.layout">
+        <section class="s_banner pb96 o_colored_level parallax s_parallax_is_fixed s_parallax_no_overflow_hidden pt48 o_half_screen_height" data-scroll-background-ratio="1" data-snippet="s_banner" data-name="Banner" style="" data-original-id="2675" data-original-src="/web/image/2675-3ea35814/fondopeople-07.png" data-mimetype="image/png" data-resize-width="1920">
+          <span class="s_parallax_bg oe_img_bg" style="background-image: url(&quot;/web/image/2675-3ea35814/fondopeople-07.png&quot;);"/>
+          <div class="o_container_small">
+            <div class="row s_nb_column_fixed">
+              <div class="rounded o_cc o_cc1 pt32 o_colored_level pb80 col-lg-8 offset-lg-2 form_box" data-name="Box" style="">
+                <h1 style="text-align: center; ">
+                  <img class="img-fluid o_we_custom_image" src="/web/image/1424-56aed194/Logo_poblacion.png" alt="" data-original-id="1424" data-original-src="/web/image/1424-56aed194/Logo_poblacion.png" data-mimetype="image/png" data-original-title="" title="" aria-describedby="tooltip556891" style="width: 25%;" loading="lazy"/>
+                  <br/>
+                  <span style="color: rgb(0, 23, 51); font-size: 36px;">¡Se el primero en vacunarte!</span>
+                </h1>
+                <p class="registry_copy">
+                  Pre-registrate y pronto te informaremos cómo realizar <br/>
+                  la cita para vacunación.
+                </p>
+                <section class="pt16 pb16 o_colored_level">
+                  <div class="container">
+                    <form role="form" action="/sisvac/update_patient" method="POST" class="patient_form" enctype="multipart/form-data">
+                      <div class="form-group col-12">
+
+                        <div class="form-group">
+                          <label class="" for="partner_vat">Cédula *</label>
+                          <input type="text" class="form-control" name="partner_vat" required="required" id="partner_vat"
+                                  placeholder="000-0000000-0"/>
+                          <input type="hidden" name="vat" t-att-value="vat" id="vat"/>
+                        </div>
+
+                      </div>
+                      <div class="d-none form_body">
+
+                        <hr/>
+
+                        <p class="welcome_message">
+                          <span>Hola <span id="welcome_name"></span>!</span><br/> 
+                          Favor suministrar estas importantes informaciones.
+                        </p>
+
+                        <div class="form-group col-12">
+                          <label class="" for="phone">Teléfono</label>
+                          <input type="text" class="form-control" name="phone" id="phone" placeholder="809-000-0000"/>
+                        </div>
+
+                        <div class="form-group col-12">
+                          <label class="" for="mobile">Celular *</label>
+                          <input type="text" class="form-control" name="mobile" id="mobile" required="required"
+                                  placeholder="809-000-0000"/>
+                        </div>
+
+                        <div class="form-group col-12">
+                          <label class="" for="email">Correo Electrónico</label>
+                          <input type="email" class="form-control" name="email" id="email" placeholder="correo@gmail.com"/>
+                        </div>
+
+                        <div class="form-group col-12">
+                          <label class="" for="street">Dirección *</label>
+                          <input type="text" class="form-control" name="street" id="street" required="required"
+                               placeholder="Calle ..."/>
+                        </div>
+
+                        <div class="form-group col-12">
+                          <label class="" for="city">Sector *</label>
+                          <input type="text" class="form-control" name="city" id="city" required="required"
+                               placeholder="Ensanche ..."/>
+                        </div>
+
+                        <div class="form-group col-12">
+                          <label class="" for="state_id">Provincia *</label>
+                          <select name="state_id" class="form-control" required="required">
+                            <option value="">Seleccione una provincia</option>
+                            <t t-foreach="country_states" t-as="state" t-key="state.id">
+                              <option t-att-value="state.id">
+                                <t t-esc="state.name" />
+                              </option>
+                            </t>
+                          </select>
+                        </div>
+
+                        <div class="form-group col-12">
+                          <label class="col-form-label" for="">
+                            Condición de Discapacidad *
+                          </label>
+                          <div class="row s_col_no_resize s_col_no_bgcolor">
+                            <input type="radio" value="No" class="form-control inner_checkbox" name="sisvac_has_discapacity"
+                                    required="required"/>
+                            <label class="col-form-label col-sm-auto" for="sisvac_has_discapacity">
+                              No
+                            </label>
+                          </div>
+                          <div class="row s_col_no_resize s_col_no_bgcolor">
+                            <input type="radio" value="Si" class="form-control inner_checkbox" name="sisvac_has_discapacity"
+                                    required="required"/>
+                            <label class="col-form-label col-sm-auto" for="sisvac_has_discapacity">
+                              Si
+                            </label>
+                          </div>
+                        </div>
+
+                        <hr/>
+
+                        <h3>Comorbilidades</h3>
+
+                        <div class="form-group col-12">
+                          <div class="row s_col_no_resize s_col_no_bgcolor">
+                            <input type="checkbox" class="form-control inner_checkbox" name="sisvac_has_hypertension" 
+                                    id="sisvac_has_hypertension"/>
+                            <label class="col-form-label col-sm-auto" for="sisvac_has_hypertension">Hipertensión</label>
+                          </div>
+                        </div>
+                        
+                        <div class="form-group col-12">
+                          <div class="row s_col_no_resize s_col_no_bgcolor">
+                            <input type="checkbox" class="form-control inner_checkbox" name="sisvac_has_diabetes" 
+                                    id="sisvac_has_diabetes"/>
+                            <label class="col-form-label col-sm-auto" for="sisvac_has_diabetes">Diabetes</label>
+                          </div>
+                        </div>
+                        
+                        <div class="form-group col-12">
+                          <div class="row s_col_no_resize s_col_no_bgcolor">
+                            <input type="checkbox" class="form-control inner_checkbox" name="sisvac_has_obesity"
+                                    id="sisvac_has_obesity"/>
+                            <label class="col-form-label col-sm-auto" for="sisvac_has_obesity">Obesidad</label>
+                          </div>
+                        </div>
+                        
+                        <div class="form-group col-12">
+                          <div class="row s_col_no_resize s_col_no_bgcolor">
+                            <input type="checkbox" class="form-control inner_checkbox" name="sisvac_has_asthma"
+                                    id="sisvac_has_asthma"/>
+                            <label class="col-form-label col-sm-auto" for="sisvac_has_asthma">Asma</label>
+                          </div>
+                        </div>
+                        
+                        <div class="form-group col-12">
+                          <div class="row s_col_no_resize s_col_no_bgcolor">
+                            <input type="checkbox" class="form-control inner_checkbox" name="sisvac_has_cardiovascular" 
+                                    id="sisvac_has_cardiovascular"/>
+                            <label class="col-form-label col-sm-auto" for="sisvac_has_cardiovascular">
+                              Enfermades Cardiovasculares
+                            </label>
+                          </div>
+                        </div>
+                        
+                        <div class="form-group col-12">
+                          <div class="row s_col_no_resize s_col_no_bgcolor">
+                            <input type="checkbox" class="form-control inner_checkbox" name="sisvac_has_renal_insufficiency" 
+                                    id="sisvac_has_renal_insufficiency"/>
+                            <label class="col-form-label col-sm-auto" for="sisvac_has_renal_insufficiency">
+                              Insuficiencia Renal
+                            </label>
+                          </div>
+                        </div>
+
+                        <div class="form-group col-12">
+                          <label class="" for="sisvac_health_notes">Notas</label>
+                          <textarea class="form-control" name="sisvac_health_notes" id="sisvac_health_notes" placeholder=""/>
+                        </div>
+
+                        <hr/>
+
+                        <h3>Contacto de emergencia</h3>
+
+                        <div class="form-group col-12">
+                          <label class="" for="sisvac_emergency_contact_name">
+                            Nombre *
+                          </label>
+                          <input type="text" class="form-control" name="sisvac_emergency_contact_name" 
+                                  id="sisvac_emergency_contact_name" placeholder="Nombre y Apellidos" required="required"/>
+                        </div>
+
+                        <div class="form-group col-12">
+                          <label class="" for="sisvac_emergency_contact_vat">
+                            Cédula
+                          </label>
+                          <input type="text" class="form-control" name="sisvac_emergency_contact_vat" 
+                                  id="sisvac_emergency_contact_vat" placeholder="000-0000000-0"/>
+                        </div>
+
+                        <div class="form-group col-12">
+                          <label class="" for="sisvac_emergency_contact_phone">
+                            Teléfono *
+                          </label>
+                          <input type="text" class="form-control" name="sisvac_emergency_contact_phone" 
+                                  id="sisvac_emergency_contact_phone" placeholder="809-000-0000" required="required"/>
+                        </div>
+
+                        <div class="form-group col-12">
+                          <label class="" for="sisvac_emergency_contact_relationship">
+                            Parentesco *
+                          </label>
+                          <select name="sisvac_emergency_contact_relationship" required="required" class="form-control">
+                            <option value="">Seleccione un parentesco</option>
+                            <option value="Abuelo/Abuela">Abuelo/Abuela</option>
+                            <option value="Padre/Madre">Padre/Madre</option>
+                            <option value="Tio/Tia">Tio/Tia</option>
+                            <option value="Esposo/Esposa">Esposo/Esposa</option>
+                            <option value="Suegro/Suegra">Suegro/Suegra</option>
+                            <option value="Hermano/Hermana">Hermano/Hermana</option>
+                            <option value="Hijo/Hija">Hijo/Hija</option>
+                            <option value="Nieto/Nieta">Nieto/Nieta</option>
+                            <option value="Sobrino/Sobrina">Sobrino/Sobrina</option>
+                            <option value="Hijastro/Hijastra">Hijastro/Hijastra</option>
+                          </select>
+                        </div>
+
+                        <div class="form-group col-12 mt-5">
+                          <button type="submit" class="btn submit_patient">Registrarme</button>
+                          <span id="o_website_form_result"></span> 
+                        </div>
+                      </div>
+                    </form>
+                  </div>
+                </section>
+                <div class="vat_error_message d-none">
+                  <p>
+                    Lo sentimos, esta cédula no se encuentra registrada, 
+                    revisa los números colocados e intenta nueva vez.
+                  </p>
+                  <p>
+                    Si los números son correctos es posible que no se encuentre registrada, 
+                    estaremos trabajando para solucionar este inconveniente.
+                  </p>
+                  <p>Favor intentar en 24 horas.</p>
+                </div>
+                <div class="already_registered_message d-none">
+                  <p>
+                    Esta persona ya está registrada en el listado, al momento de estar habilitado/a 
+                    para vacunación le estaremos contactando vía telefónica y por correo electrónico, 
+                    para darle más detalles de su cita.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </t>
+    </template>
+
+    <template id="assets_frontend" name="sisvac_website_assets" inherit_id="web.assets_frontend">
+        <xpath expr="." position="inside">
+            <script type="text/javascript" src="/sisvac_website/static/src/js/forms.js"></script>
+            <link rel="stylesheet" type="text/scss" href="/sisvac_website/static/src/scss/forms.scss"/>
+        </xpath>
+    </template>
+  </data>
+</odoo>

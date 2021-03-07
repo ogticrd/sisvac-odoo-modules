@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="sisvac_vaccinator_1" model="res.partner">
+        <field name="name">Vaccinator 1</field>
+        <field name="sisvac_is_vaccinator" eval="True"/>
+    </record>
+
+    <record id="sisvac_patient_1" model="res.partner">
+        <field name="name">Patient 1</field>
+        <field name="sisvac_is_patient" eval="True"/>
+    </record>
+
+</odoo>

@@ -1,0 +1,166 @@
+name: Unit Tests
+
+on:
+  push:
+    branches:
+      - '[0-9]+.0-dev-*'
+    paths:
+      - '**/src/**'
+      - '**/i18n/**'
+      - '**.py'
+      - '**.xml'
+      - '**.csv'
+
+env:
+  PROJECT_NAME: sisvac-odoo
+  REGISTRY_BASE: us-east1-docker.pkg.dev/${{ secrets.PROJECT_ID }}
+  REQUIRED_MODULES: 'session_redis' # list of addional addons to install separated by comma
+
+jobs:
+  dependencies:
+    name: Dependencies
+    runs-on: ubuntu-latest
+    container:
+      image: gcr.io/iterativo/dockerdoo:14.0
+      options: -t --user root
+    outputs:
+      get_modules: ${{ steps.get_modules.outputs.modules }}
+
+    steps:
+    - name: Inject slug/short variables
+      uses: rlespinasse/github-slug-action@v3.x
+
+    - name: Checkout local
+      uses: actions/checkout@v2
+      with:
+        path: ${{ env.GITHUB_REPOSITORY_SLUG_URL }}
+
+    - name: Check Flake8
+      uses: TrueBrain/actions-flake8@master
+      with:
+        ignore: E123,E133,E226,E241,E242,F811,F601,W503,W504,E203,F401
+        max_line_length: 120
+        only_warn: 1
+
+    - name: camptocamp
+      uses: actions/checkout@v2
+      with:
+        repository: camptocamp/odoo-cloud-platform
+        path: odoo-cloud-platform
+        ref: '14.0'
+
+    - name: OCA connector
+      uses: actions/checkout@v2
+      with:
+        repository: OCA/connector
+        path: connector
+        ref: '14.0'
+
+    - name: OCA rest-framework
+      uses: actions/checkout@v2
+      with:
+        repository: OCA/rest-framework
+        path: rest-framework
+        ref: '14.0'
+
+    - name: OCA partner-contact
+      uses: actions/checkout@v2
+      with:
+        repository: OCA/partner-contact
+        path: partner-contact
+        ref: '14.0'
+
+    - name: OCA web
+      uses: actions/checkout@v2
+      with:
+        repository: OCA/web
+        path: web
+        ref: '14.0'
+
+    - name: OCA stock-logistics-workflow
+      uses: actions/checkout@v2
+      with:
+        repository: OCA/stock-logistics-workflow
+        path: stock-logistics-workflow
+        ref: '14.0'
+
+    - name: Odoo Dominicana l10n-dominicana
+      uses: actions/checkout@v2
+      with:
+        repository: odoo-dominicana/l10n-dominicana
+        path: l10n-dominicana
+        ref: '14.0'
+
+    - name: Odoo Enterprise
+      uses: actions/checkout@v2
+      with: 
+        repository: odoo/enterprise
+        token: ${{ secrets.ACTIONS_PAT }}
+        path: enterprise
+        ref: '14.0'
+
+    - name: Select Odoo modules to install & upload it
+      id: get_modules
+      run: |
+        curl https://raw.githubusercontent.com/iterativo-git/dockerdoo/14.0/resources/getaddons.py -o getaddons.py
+        output=$(python -c "from getaddons import get_modules; print(','.join(get_modules('$GITHUB_WORKSPACE/${{ env.GITHUB_REPOSITORY_SLUG_URL }}', depth=3)))")
+        echo "::set-output name=modules::$output"
+        sudo apt-get update && sudo apt-get install -y zip && zip -r modules.zip .
+
+    - name: Upload repository results
+      uses: actions/upload-artifact@v2
+      with:
+        name: modules
+        path: modules.zip
+        retention-days: 1
+
+  test:
+    name: Test Modules
+    needs: ['dependencies']
+    runs-on: ubuntu-latest
+    container:
+      image: gcr.io/iterativo/dockerdoo:14.0
+      options: -t --user root
+      volumes:
+        - ${{ github.workspace }}:/workspace
+
+    services:
+      db:
+        image: postgres:11
+        env:
+          POSTGRES_DB: postgres
+          POSTGRES_USER: odoo
+          POSTGRES_PASSWORD: odoo
+        # needed because the postgres container does not provide a healthcheck
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    steps:
+    - name: Download modules results
+      uses: actions/download-artifact@v2
+      with:
+        name: modules
+
+    - run: unzip modules.zip
+
+    - name: chown home for pypy
+      uses: docker://gcr.io/iterativo/dockerdoo:14.0
+      with:
+        args: sudo chown -R 1000:1000 /github/home
+
+    - name: Run odoo
+      uses: docker://gcr.io/iterativo/dockerdoo:14.0
+      with:
+        args: odoo
+      env:
+        RUN_TESTS: '1'
+        PIP_AUTO_INSTALL: '1'
+        LOG_LEVEL: test
+        WITHOUT_DEMO: 'False'
+        EXTRA_MODULES: ${{ needs.dependencies.outputs.get_modules }}
+        ODOO_EXTRA_ADDONS: /github/workspace
