@@ -91,4 +91,18 @@
         action="sisvac_vaccines_action"
     />
 
+    <record id="product_is_vaccine_form_view" model="ir.ui.view">
+        <field name="name">product.is.vaccines.form.view</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='options']" position="inside">
+                <div>
+                    <field name="sisvac_is_vaccine"/>
+                    <label for="sisvac_is_vaccine"/>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
 </odoo>

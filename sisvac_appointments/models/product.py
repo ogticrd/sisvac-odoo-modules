@@ -4,7 +4,7 @@ from odoo import models, fields
 class Product(models.Model):
     _inherit = "product.template"
 
-    sisvac_is_vaccine = fields.Boolean()
+    sisvac_is_vaccine = fields.Boolean("Is vaccine?")
     sisvac_dose_qty = fields.Integer(default=1)
 
     sisvac_dose_interval = fields.Integer()

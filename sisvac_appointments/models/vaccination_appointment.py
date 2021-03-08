@@ -6,6 +6,7 @@ class VaccineApplication(models.Model):
     _name = "sisvac.vaccine.application"
     _description = "Vaccine Application"
     _order = "application_date"
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _inherits = {"calendar.event": "event_id"}
 
     event_id = fields.Many2one(
@@ -118,7 +119,7 @@ class VaccineApplication(models.Model):
 class VaccinationAppointment(models.Model):
     _name = "sisvac.vaccination.appointment"
     _description = "Vaccination Appointment"
-    _inherit = "mail.thread"
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _order = "next_appointment_date, name"
 
     name = fields.Char(

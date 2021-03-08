@@ -9,7 +9,7 @@
                 <header>
                     <button name="action_confirm_appointment" type="object"
                             attrs="{'invisible': [('state', '!=', 'draft')]}"
-                            class="btn btn-primary" string="Record Vaccines"/>
+                            class="btn btn-primary" string="Confirm Appointment"/>
                     <button name="action_apply_vaccine_wizard" type="object"
                             attrs="{'invisible': [('show_vaccine_wizard_button', '=', False)]}"
                             class="btn btn-primary" string="Apply Vaccine"/>
@@ -45,7 +45,7 @@
                             <field name="observations"/>
                         </group>
                         <group name="appointment_info" string="Vaccination info">
-                            <field name="product_id"/>
+                            <field name="product_id" options="{'no_quick_create': True, 'no_create': True}"/>
                             <field name="location_id"/>
                             <field name="first_appointment_date"/>
                             <field name="last_appointment_date"/>
@@ -70,6 +70,10 @@
                         </page>
                     </notebook>
                 </sheet>
+                <div class="oe_chatter">
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
             </form>
         </field>
     </record>
