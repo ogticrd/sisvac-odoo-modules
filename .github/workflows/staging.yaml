@@ -4,6 +4,9 @@ on:
   pull_request:
     branches:
       - '[0-9]+.0'
+    types: [opened]
+  issue_comment:
+    types: [created]
 
 env:
   PROJECT_NAME: sisvac-odoo
@@ -11,9 +14,27 @@ env:
   REQUIRED_MODULES: 'session_redis' # list of addional addons to install separated by comma
 
 jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      deploy: ${{ steps.check.outputs.triggered }}
+    steps:
+    - uses: khan/pull-request-comment-trigger@master
+      id: check
+      with:
+        trigger: '@deploy'
+        reaction: rocket
+      env:
+        GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+    - run: 'echo Found it!'
+      if: steps.check.outputs.triggered == 'true'
+
   dependencies:
     name: Dependencies
+    needs: ['check']
+    if: ${{ needs.dependencies.check.outputs.deploy == 'true' }}
     runs-on: ubuntu-latest
+
     container:
       image: gcr.io/iterativo/dockerdoo:14.0
       options: -t --user root
