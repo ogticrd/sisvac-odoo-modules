@@ -7,7 +7,7 @@ class RestPrivateController(main.RestController):
     _default_auth = "user"
 
 
-class RestPublicController(main.RestController):
-    _root_path = "/sisvac/"
-    _collection_name = "sisvac.public.services"
-    _default_auth = "public"
+# class RestPublicController(main.RestController):
+#     _root_path = "/sisvac/"
+#     _collection_name = "sisvac.public.services"
+#     _default_auth = "public"
