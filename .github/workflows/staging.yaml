@@ -34,9 +34,9 @@ jobs:
     - name: Validate context
       env:
         GITHUB_CONTEXT: ${{ toJSON(github) }}
-        run: |
-          echo $GITHUB_CONTEXT
-          echo ${{ github.event.issue.pull_request.head.ref }}
+      run: |
+        echo $GITHUB_CONTEXT
+        echo ${{ github.event.issue.pull_request.head.ref }}
 
   dependencies:
     name: Dependencies
