@@ -43,7 +43,7 @@ jobs:
       shell: bash
       run: |
         BRANCH=${{ steps.comment-branch.outputs.head_ref }}
-        BRANCH_URL=${REPO_NAME//[[:punct:]]/-}
+        BRANCH_URL=${BRANCH//[[:punct:]]/-}
         echo ::set-output name=head_ref_slug::$BRANCH_URL
 
   dependencies:
