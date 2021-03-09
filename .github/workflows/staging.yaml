@@ -164,7 +164,7 @@ jobs:
         context: .
         file: ${{ env.GITHUB_REPOSITORY_SLUG_URL }}/Dockerfile
         push: true
-        tags: ${{ env.REGISTRY_BASE}}/${{env.PROJECT_NAME}}/${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG }}:${{ env.GITHUB_HEAD_REF_SLUG }}
+        tags: ${{ env.REGISTRY_BASE}}/${{env.PROJECT_NAME}}/${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG }}:${{ env.GITHUB_REF_SLUG }}
 
   deploy:
     name: GKE Deploy
@@ -200,10 +200,10 @@ jobs:
         # Image to Deploy
         PROJECT_ID: ${{ secrets.PROJECT_ID }}
         REPO_NAME: ${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG }}
-        BRANCH_NAME: ${{ env.GITHUB_HEAD_REF_SLUG }}
+        BRANCH_NAME: ${{ env.GITHUB_REF_SLUG }}
         # URL to acccess
         REPO_URL: ${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG_URL }}
-        BRANCH_URL: ${{ env.GITHUB_HEAD_REF_SLUG_URL }}
+        BRANCH_URL: ${{ env.GITHUB_REF_SLUG_URL }}
 
     # Get the GKE credentials so we can deploy to the cluster
     - uses: google-github-actions/get-gke-credentials@v0.2.1
