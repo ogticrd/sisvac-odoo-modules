@@ -31,8 +31,12 @@ jobs:
     - run: 'echo Found it!'
       if: steps.check.outputs.triggered == 'true'
 
-    - run: 'echo ${{ toJson(github) }}'
-    - run: 'echo ${{ github.event.issue.pull_request.head.ref }}'
+    - name: Validate context
+      env:
+        GITHUB_CONTEXT: ${{ toJSON(github) }}
+        run: |
+          echo $GITHUB_CONTEXT
+          echo ${{ github.event.issue.pull_request.head.ref }}
 
   dependencies:
     name: Dependencies
