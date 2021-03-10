@@ -7,7 +7,6 @@
             <tree string="Consent">
                 <field name="date"/>
                 <field name="partner_id"/>
-                <field name="patient_signature"/>
                 <field name="has_covid"/>
                 <field name="is_pregnant"/>
                 <field name="had_fever"/>
@@ -24,22 +23,33 @@
         <field name="name">sisvac.vaccination.consent.form.view</field>
         <field name="model">sisvac.vaccination.consent</field>
         <field name="arch" type="xml">
-            <form string="consent">
+            <form string="Consent">
                 <sheet>
+                    <div class="oe_title oe_inline">
+                        <label for="partner_id"/>
+                        <h1><field name="partner_id" nolabel="1"/></h1>
+                    </div>
                     <group>
-                        <field name="date"/>
-                        <field name="partner_id"/>
-                        <field name="patient_signature"/>
-                        <field name="has_covid"/>
-                        <field name="is_pregnant"/>
-                        <field name="had_fever"/>
-                        <field name="is_vaccinated"/>
-                        <field name="had_reactions"/>
-                        <field name="is_allergic"/>
-                        <field name="is_medicated"/>
-                        <field name="had_transplants"/>
+                        <group>
+                            <field name="date"/>
+                            <field name="patient_signature" widget="image"/>
+                        </group>
+                        <group>
+                            <field name="has_covid"/>
+                            <field name="is_pregnant"/>
+                            <field name="had_fever"/>
+                            <field name="is_vaccinated"/>
+                            <field name="had_reactions"/>
+                            <field name="is_allergic"/>
+                            <field name="is_medicated"/>
+                            <field name="had_transplants"/>
+                        </group>
                     </group>
                 </sheet>
+                <div class="oe_chatter">
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
             </form>
         </field>
     </record>
