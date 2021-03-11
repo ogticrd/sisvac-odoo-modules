@@ -64,8 +64,9 @@ class Vaccination(http.Controller):
         return redirect("/contactus-thank-you")
 
     def _get_patient_data(self, vat):
+        patient_api_url_param = "sisvac.patient.api"
+        patient_api = request.env['ir.config_parameter'].sudo().get_param(patient_api_url_param)
         clean_vat = re.sub("[^0-9]", "", vat)
-        patient_api = "https://citizens.api.digital.gob.do/api/citizens/basic-data?key=AIzaSyBrjBWquMuEZ1nUZd4-O5cwNVzOOitiqls=&id="
 
         try:
             req = requests.get(patient_api + clean_vat)

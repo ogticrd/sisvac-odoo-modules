@@ -49,6 +49,13 @@ jobs:
         path: odoo-cloud-platform
         ref: '14.0'
 
+    - name: OCA server-tools
+      uses: actions/checkout@v2
+      with:
+        repository: OCA/server-tools
+        path: server-tools
+        ref: '14.0'
+
     - name: OCA connector
       uses: actions/checkout@v2
       with:
@@ -75,6 +82,27 @@ jobs:
       with:
         repository: OCA/web
         path: web
+        ref: '14.0'
+
+    - name: OCA server-ux
+      uses: actions/checkout@v2
+      with:
+        repository: OCA/server-ux
+        path: server-ux
+        ref: '14.0'
+
+    - name: OCA purchase-workflow
+      uses: actions/checkout@v2
+      with:
+        repository: OCA/purchase-workflow
+        path: purchase-workflow
+        ref: '14.0'
+
+    - name: OCA wms
+      uses: actions/checkout@v2
+      with:
+        repository: OCA/wms
+        path: wms
         ref: '14.0'
 
     - name: OCA stock-logistics-workflow

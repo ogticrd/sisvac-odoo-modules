@@ -81,6 +81,13 @@ jobs:
         path: odoo-cloud-platform
         ref: '14.0'
 
+    - name: OCA server-tools
+      uses: actions/checkout@v2
+      with:
+        repository: OCA/server-tools
+        path: server-tools
+        ref: '14.0'
+
     - name: OCA connector
       uses: actions/checkout@v2
       with:
@@ -107,6 +114,27 @@ jobs:
       with:
         repository: OCA/web
         path: web
+        ref: '14.0'
+
+    - name: OCA server-ux
+      uses: actions/checkout@v2
+      with:
+        repository: OCA/server-ux
+        path: server-ux
+        ref: '14.0'
+
+    - name: OCA purchase-workflow
+      uses: actions/checkout@v2
+      with:
+        repository: OCA/purchase-workflow
+        path: purchase-workflow
+        ref: '14.0'
+
+    - name: OCA wms
+      uses: actions/checkout@v2
+      with:
+        repository: OCA/wms
+        path: wms
         ref: '14.0'
 
     - name: OCA stock-logistics-workflow
@@ -150,6 +178,8 @@ jobs:
     name: Build & Push to GCR
     needs: ['pr_commented', 'dependencies']
     runs-on: ubuntu-latest
+    outputs:
+      image_digest: ${{ steps.docker_build.outputs.digest }}
 
     steps:
     - name: Inject slug/short variables
@@ -202,7 +232,9 @@ jobs:
       run: |
         curl -sfLo kustomize https://github.com/kubernetes-sigs/kustomize/releases/download/v3.1.0/kustomize_3.1.0_linux_amd64
         chmod u+x ./kustomize
-        ./kustomize build sisvac-odoo-gke/deployments/odoo/14.0/dev -o deployment.yaml.tmpl
+        cd sisvac-odoo-gke/deployments/odoo/14.0/dev
+        ./kustomize edit set image ${{ env.REGISTRY_BASE}}/${{env.PROJECT_NAME}}/${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG }}@${{ needs.build.outputs.image_digest }}
+        ./kustomize build . -o deployment.yaml.tmpl
     - name: Render Deployment YAML
       uses: nowactions/envsubst@v1
       with:
