@@ -3,7 +3,7 @@ from odoo.addons.component.core import Component
 
 class LocationService(Component):
     _inherit = ["base.rest.service", "sisvac.components.common"]
-    _name = "consent.service"
+    _name = "location.service"
     _usage = "locations"
     _collection = "sisvac.private.services"
     _description = """
