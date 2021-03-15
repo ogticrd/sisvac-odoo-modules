@@ -12,5 +12,18 @@
             </field>
         </field>
     </record>
+    
+    <record id="view_location_search_inherited" model="ir.ui.view">
+        <field name="name">view.location.search.inherited</field>
+        <field name="model">stock.location</field>
+        <field name="inherit_id" ref="stock.view_location_search"/>
+        <field name="arch" type="xml">
+            <filter name="inactive" position="after">
+                <separator/>
+                <filter name="is_vaccination_center" string="Is Vaccination Center"
+                        domain="[('sisvac_partner_id', '!=', False)]"/>
+            </filter>
+        </field>
+    </record>
 
 </odoo>

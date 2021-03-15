@@ -10,6 +10,14 @@ class StockLocation(models.Model):
         domain="[('sisvac_is_vaccination_center', '=', True)]",
     )
 
+    _sql_constraints = [
+        (
+            "unique_sisvac_partner_id",
+            "UNIQUE (sisvac_partner_id)",
+            "Only one location per Vaccination Center is allowed",
+        )
+    ]
+
     def _get_location_data(self):
         return {
             "id": self.id,
