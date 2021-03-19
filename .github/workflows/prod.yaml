@@ -190,12 +190,16 @@ jobs:
         token: ${{ secrets.ACTIONS_PAT }}
         ref: main
 
-    - name: Set up Kustomize
+    - uses: imranismail/setup-kustomize@v1
+      with:
+        kustomize-version: "3.1.0"
+
+    - name: Kustomize - Set image & Build
       run: |
-        curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
         cd sisvac-odoo-gke/deployments/odoo/14.0/prod
         kustomize edit set image ${{ env.REGISTRY_BASE}}/${{env.PROJECT_NAME}}/${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG }}@${{ needs.build.outputs.image_digest }}
         kustomize build . -o deployment.yaml.tmpl
+
     - name: Render Deployment YAML
       uses: nowactions/envsubst@v1
       with:
