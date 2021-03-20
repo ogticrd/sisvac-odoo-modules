@@ -203,7 +203,7 @@ jobs:
     - name: Render Deployment YAML
       uses: nowactions/envsubst@v1
       with:
-        input: ./deployment.yaml.tmpl
+        input: sisvac-odoo-gke/deployments/odoo/14.0/prod/deployment.yaml.tmpl
         output: ./deployment.yaml
 
     # Get the GKE credentials so we can deploy to the cluster
