@@ -4,6 +4,12 @@ on:
   push:
     branches:
       - '[0-9]+.0'
+    paths:
+      - '**/src/**'
+      - '**/i18n/**'
+      - '**.py'
+      - '**.xml'
+      - '**.csv'
 
 env:
   PROJECT_NAME: sisvac-odoo

@@ -66,6 +66,7 @@ jobs:
       uses: actions/checkout@v2
       with:
         path: ${{ env.GITHUB_REPOSITORY_SLUG_URL }}
+        ref: ${{ needs.pr_commented.outputs.branch }}
 
     - name: Check Flake8
       uses: TrueBrain/actions-flake8@master
