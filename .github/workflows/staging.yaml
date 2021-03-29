@@ -145,6 +145,13 @@ jobs:
         path: stock-logistics-workflow
         ref: '14.0'
 
+    - name: OCA operating-unit
+      uses: actions/checkout@v2
+      with:
+        repository: ecosoft-odoo/operating-unit
+        path: operating-unit
+        ref: '14.0-mig-stock_operating_unit'
+
     - name: Odoo Dominicana l10n-dominicana
       uses: actions/checkout@v2
       with:
