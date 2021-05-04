@@ -1,276 +1,45 @@
-name: Staging Deploy
+name: Staging
 
 on:
-  pull_request:
-    branches:
-      - '[0-9]+.0'
-    types: [opened]
   issue_comment:
     types: [created]
 
-env:
-  PROJECT_NAME: sisvac-odoo
-  REGISTRY_BASE: us-east1-docker.pkg.dev/${{ secrets.PROJECT_ID }}
-  REQUIRED_MODULES: 'session_redis,logging_json,attachment_s3' # list of addional addons to install separated by comma
-
 jobs:
   pr_commented:
-    # This job only runs for pull request comments
-    name: PR comment
+    name: Staging PR comment
     runs-on: ubuntu-latest
-    outputs:
-      deploy: ${{ steps.check.outputs.triggered }}
-      branch: ${{ steps.comment-branch.outputs.head_ref }}
-      branch_url: ${{ steps.slugs.outputs.head_ref_slug }}
+    if: startsWith(github.event.comment.body, '/staging')
     steps:
-    - uses: khan/pull-request-comment-trigger@master
-      id: check
-      with:
-        trigger: '#deploy'
-        reaction: rocket
-      env:
-        GITHUB_TOKEN: '${{ secrets.GITHUB_TOKEN }}'
+      - uses: peter-evans/create-or-update-comment@v1
+        with:
+          comment-id: ${{ github.event.comment.id }}
+          reactions: "rocket"
 
-    # needed to be able to check out correct branch
-    - uses: xt0rted/pull-request-comment-branch@v1
-      if: steps.check.outputs.triggered == 'true'
-      id: comment-branch
-      with:
-        repo_token: ${{ secrets.GITHUB_TOKEN }}
+      # needed to be able to check out correct branch
+      - uses: xt0rted/pull-request-comment-branch@v1
+        id: comment-branch
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Adapt branch name for URL use
-      id: slugs
-      shell: bash
-      run: |
-        BRANCH=${{ steps.comment-branch.outputs.head_ref }}
-        BRANCH_URL=${BRANCH//[[:punct:]]/-}
-        echo ::set-output name=head_ref_slug::$BRANCH_URL
+      # Extract database name from staging comment
+      - name: comment-slugs
+        id: comment_slugs
+        if: startsWith(github.event.comment.body, '/staging')
+        shell: bash
+        run: |
+          COMMENT="${{ github.event.comment.body }}"
+          DB_NAME=$(echo "$COMMENT" | sed "s/\/staging //g")
+          if [[ "$DB_NAME" != "/staging" ]]
+          then echo "$DB_NAME" > db_name.txt; 
+          else echo "Missing db name" && exit 1; fi
+      - uses: Amwam/issue-comment-action@v1.3.1
+        with:
+          keywords: '["/staging"]'
+          labels: '["staging"]'
+          github-token: "${{ secrets.ACTIONS_PAT }}"
 
-  dependencies:
-    name: Dependencies
-    needs: ['pr_commented']
-    if: ${{ needs.pr_commented.outputs.deploy == 'true' }}
-    runs-on: ubuntu-latest
-
-    container:
-      image: gcr.io/iterativo/dockerdoo:14.0
-      options: -t --user root
-    outputs:
-      get_modules: ${{ steps.get_modules.outputs.modules }}
-
-    steps:
-    - name: Inject slug/short variables
-      uses: rlespinasse/github-slug-action@v3.x
-
-    - name: Checkout local
-      uses: actions/checkout@v2
-      with:
-        path: ${{ env.GITHUB_REPOSITORY_SLUG_URL }}
-        ref: ${{ needs.pr_commented.outputs.branch }}
-
-    - name: Check Flake8
-      uses: TrueBrain/actions-flake8@master
-      with:
-        ignore: E123,E133,E226,E241,E242,F811,F601,W503,W504,E203,F401
-        max_line_length: 120
-        only_warn: 1
-
-    - name: camptocamp
-      uses: actions/checkout@v2
-      with:
-        repository: camptocamp/odoo-cloud-platform
-        path: odoo-cloud-platform
-        ref: '14.0'
-
-    - name: OCA server-tools
-      uses: actions/checkout@v2
-      with:
-        repository: OCA/server-tools
-        path: server-tools
-        ref: '14.0'
-
-    - name: OCA connector
-      uses: actions/checkout@v2
-      with:
-        repository: OCA/connector
-        path: connector
-        ref: '14.0'
-
-    - name: OCA rest-framework
-      uses: actions/checkout@v2
-      with:
-        repository: OCA/rest-framework
-        path: rest-framework
-        ref: '14.0'
-
-    - name: OCA partner-contact
-      uses: actions/checkout@v2
-      with:
-        repository: OCA/partner-contact
-        path: partner-contact
-        ref: '14.0'
-
-    - name: OCA web
-      uses: actions/checkout@v2
-      with:
-        repository: OCA/web
-        path: web
-        ref: '14.0'
-
-    - name: OCA server-ux
-      uses: actions/checkout@v2
-      with:
-        repository: OCA/server-ux
-        path: server-ux
-        ref: '14.0'
-
-    - name: OCA purchase-workflow
-      uses: actions/checkout@v2
-      with:
-        repository: OCA/purchase-workflow
-        path: purchase-workflow
-        ref: '14.0'
-
-    - name: OCA wms
-      uses: actions/checkout@v2
-      with:
-        repository: OCA/wms
-        path: wms
-        ref: '14.0'
-
-    - name: OCA stock-logistics-workflow
-      uses: actions/checkout@v2
-      with:
-        repository: OCA/stock-logistics-workflow
-        path: stock-logistics-workflow
-        ref: '14.0'
-
-    - name: OCA operating-unit
-      uses: actions/checkout@v2
-      with:
-        repository: ecosoft-odoo/operating-unit
-        path: operating-unit
-        ref: '14.0-mig-stock_operating_unit'
-
-    - name: Odoo Dominicana l10n-dominicana
-      uses: actions/checkout@v2
-      with:
-        repository: odoo-dominicana/l10n-dominicana
-        path: l10n-dominicana
-        ref: '14.0'
-
-    - name: Odoo Enterprise
-      uses: actions/checkout@v2
-      with: 
-        repository: odoo/enterprise
-        token: ${{ secrets.ACTIONS_PAT }}
-        path: enterprise
-        ref: '14.0'
-
-    - name: Select Odoo modules to install & upload it
-      id: get_modules
-      run: |
-        curl https://raw.githubusercontent.com/iterativo-git/dockerdoo/14.0/resources/getaddons.py -o getaddons.py
-        output=$(python -c "from getaddons import get_modules; print(','.join(get_modules('$GITHUB_WORKSPACE/${{ env.GITHUB_REPOSITORY_SLUG_URL }}', depth=3)))")
-        echo "::set-output name=modules::$output"
-        sudo apt-get update && sudo apt-get install -y zip && zip -r modules.zip .
-
-    - name: Upload repository results
-      uses: actions/upload-artifact@v2
-      with:
-        name: modules
-        path: modules.zip
-        retention-days: 1
-
-  build:
-    name: Build & Push to GCR
-    needs: ['pr_commented', 'dependencies']
-    runs-on: ubuntu-latest
-    outputs:
-      image_digest: ${{ steps.docker_build.outputs.digest }}
-
-    steps:
-    - name: Inject slug/short variables
-      uses: rlespinasse/github-slug-action@v3.x
-
-    - name: Download repository results
-      uses: actions/download-artifact@v2
-      with:
-        name: modules
-
-    - run: unzip modules.zip && ls
-
-    -  name: Set up Docker Buildx
-       uses: docker/setup-buildx-action@v1
-
-    - name: Login to GAR
-      uses: docker/login-action@v1
-      with:
-        registry: ${{ env.REGISTRY_BASE}}
-        username: _json_key
-        password: ${{ secrets.GAR_JSON_KEY }}
-
-    - name: Build and push
-      id: docker_build
-      uses: docker/build-push-action@v2
-      with:
-        context: .
-        file: ${{ env.GITHUB_REPOSITORY_SLUG_URL }}/Dockerfile
-        push: true
-        tags: ${{ env.REGISTRY_BASE}}/${{env.PROJECT_NAME}}/${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG }}:${{ needs.pr_commented.outputs.branch }}
-
-  deploy:
-    name: GKE Deploy
-    needs: ['pr_commented','dependencies', 'build']
-    runs-on: ubuntu-latest
-
-    steps:
-    - name: Inject slug/short variables
-      uses: rlespinasse/github-slug-action@v3.x
-
-    - name: K8s Template
-      uses: actions/checkout@v2
-      with:
-        repository: opticrd/sisvac-odoo-gke.git
-        path: sisvac-odoo-gke
-        token: ${{ secrets.ACTIONS_PAT }}
-        ref: main
-
-    - uses: imranismail/setup-kustomize@v1
-      with:
-        kustomize-version: "3.1.0"
-
-    - name: Kustomize - Set image & Build
-      run: |
-        cd sisvac-odoo-gke/deployments/odoo/14.0/dev
-        kustomize edit set image ${{ env.REGISTRY_BASE}}/${{env.PROJECT_NAME}}/${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG }}@${{ needs.build.outputs.image_digest }}
-        kustomize build . -o deployment.yaml.tmpl
-
-    - name: Render Deployment YAML
-      uses: nowactions/envsubst@v1
-      with:
-        input: sisvac-odoo-gke/deployments/odoo/14.0/dev/deployment.yaml.tmpl
-        output: ./deployment.yaml
-      env:
-        ENV: dev
-        # Modules to Install
-        EXTRA_MODULES: ${{ needs.dependencies.outputs.get_modules }},${{ env.REQUIRED_MODULES }}
-        # Image to Deploy
-        PROJECT_ID: ${{ secrets.PROJECT_ID }}
-        REPO_NAME: ${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG }}
-        BRANCH_NAME: ${{ needs.pr_commented.outputs.branch }}
-        # URL to acccess
-        REPO_URL: ${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG_URL }}
-        BRANCH_URL: ${{ needs.pr_commented.outputs.branch_url }}
-
-    # Get the GKE credentials so we can deploy to the cluster
-    - uses: google-github-actions/get-gke-credentials@v0.2.1
-      with:
-        cluster_name: ${{ secrets.GKE_CLUSTER }}
-        location: ${{ secrets.GKE_ZONE }}
-        credentials: ${{ secrets.GKE_SA_KEY }}
-        project_id: ${{ secrets.PROJECT_ID }}
-
-    - name: Deploy
-      run: |
-        kubectl apply -f deployment.yaml
+      - name: Upload artifact with db name
+        uses: actions/upload-artifact@v2
+        with:
+          name: db_name-${{ steps.comment-branch.outputs.head_ref }}
+          path: db_name.txt
