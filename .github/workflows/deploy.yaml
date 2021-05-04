@@ -1,0 +1,86 @@
+name: Deploy
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  pr_commented:
+    name: PR comment
+    runs-on: ubuntu-latest
+    if: startsWith(github.event.comment.body, '/deploy')
+    outputs:
+      deploy: ${{ steps.check.outputs.triggered }}
+      base_ref: ${{ steps.comment-branch.outputs.base_ref }}
+      head_ref: ${{ steps.comment-branch.outputs.head_ref }}
+      head_ref_slug: ${{ steps.slugs.outputs.head_ref_slug }}
+    steps:
+      - uses: peter-evans/create-or-update-comment@v1
+        with:
+          comment-id: ${{ github.event.comment.id }}
+          reactions: "rocket"
+
+      # needed to be able to check out correct branch
+      - uses: xt0rted/pull-request-comment-branch@v1
+        id: comment-branch
+        with:
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - id: slugs
+        shell: bash
+        run: |
+          BRANCH=${{ steps.comment-branch.outputs.head_ref }}
+          BRANCH_URL=${BRANCH//[[:punct:]]/-}
+          echo ::set-output name=head_ref_slug::$BRANCH_URL
+
+  deploy:
+    name: GKE Deploy
+    needs: ["pr_commented"]
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: rlespinasse/github-slug-action@v3.x
+
+      - name: Download deployment artifact
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          github_token: ${{secrets.GITHUB_TOKEN}}
+          workflow: tests.yaml
+          name: deployment-${{ needs.pr_commented.outputs.head_ref }}
+
+      - run: cat deployment.yaml
+
+      - uses: google-github-actions/get-gke-credentials@v0.2.1
+        with:
+          cluster_name: ${{ secrets.GKE_CLUSTER }}
+          location: ${{ secrets.GKE_ZONE }}
+          credentials: ${{ secrets.GAR_JSON_KEY }}
+          project_id: ${{ secrets.GKE_PROJECT }}
+
+      - name: Deploy
+        uses: docker://gcr.io/cloud-builders/gke-deploy
+        with:
+          args: run --filename=deployment.yaml --app=${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG }} --version=${{ needs.pr_commented.outputs.base_ref }} --timeout 1800s
+
+      - name: Failure reaction
+        if: ${{ failure() }}
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          comment-id: ${{ github.event.comment.id }}
+          reactions: "-1"
+
+      - name: Success reaction
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          comment-id: ${{ github.event.comment.id }}
+          reactions: heart
+
+      - name: Comment PR with QA URL
+        if: ${{ success() }}
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          issue-number: ${{ github.event.issue.number }}
+          body: |
+            **QA URL:** 
+            https://${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG }}-${{ needs.pr_commented.outputs.head_ref_slug }}.${{ secrets.ROOT_DOMAIN }}
+          reactions: eyes

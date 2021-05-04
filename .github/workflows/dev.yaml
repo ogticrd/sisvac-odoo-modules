@@ -3,162 +3,202 @@ name: Unit Tests
 on:
   push:
     branches:
-      - '[0-9]+.0-dev-*'
+      - "[0-9]+.0"
     paths:
-      - '**/src/**'
-      - '**/i18n/**'
-      - '**.py'
-      - '**.xml'
-      - '**.csv'
+      - "**/workflows/**"
+      - "**/src/**"
+      - "**/i18n/**"
+      - "**.py"
+      - "**.xml"
+  pull_request:
+    branches:
+      - "[0-9]+.0"
+    paths:
+      - "**/workflows/**"
+      - "**/src/**"
+      - "**/i18n/**"
+      - "**.py"
+      - "**.xml"
+    types: [ opened, synchronize, reopened, labeled ]
 
 env:
-  PROJECT_NAME: sisvac-odoo
-  REGISTRY_BASE: us-east1-docker.pkg.dev/${{ secrets.PROJECT_ID }}
-  REQUIRED_MODULES: 'session_redis' # list of addional addons to install separated by comma
+  REQUIRED_MODULES: cloud_platform_exoscale # list of addional addons to install separated by comma
+  GAR_BASE: us-east1-docker.pkg.dev/${{ secrets.GKE_PROJECT }}/sisvac-odoo
+  IMAGE_LOCATION: gobdo/odoo-gob
+  ENV: "dev"
 
 jobs:
-  dependencies:
-    name: Dependencies
+  build:
+    name: Build
     runs-on: ubuntu-latest
-    container:
-      image: gcr.io/iterativo/dockerdoo:14.0
-      options: -t --user root
+    if: github.event_name == 'pull_request'
     outputs:
       get_modules: ${{ steps.get_modules.outputs.modules }}
+      image_digest: ${{ steps.docker_build.outputs.digest }}
 
     steps:
-    - name: Inject slug/short variables
-      uses: rlespinasse/github-slug-action@v3.x
+      ### Dependencies
+      - uses: rlespinasse/github-slug-action@v3.x
 
-    - name: Checkout local
-      uses: actions/checkout@v2
-      with:
-        path: ${{ env.GITHUB_REPOSITORY_SLUG_URL }}
+      - name: Checkout local
+        uses: actions/checkout@v2
+        with:
+          path: ${{ env.GITHUB_REPOSITORY_SLUG_URL }}
 
-    - name: Check Flake8
-      uses: TrueBrain/actions-flake8@master
-      with:
-        ignore: E123,E133,E226,E241,E242,F811,F601,W503,W504,E203,F401
-        max_line_length: 120
-        only_warn: 1
+      - name: Odoo Enterprise
+        uses: actions/checkout@v2
+        with:
+          repository: odoo/enterprise
+          token: ${{ secrets.ACTIONS_PAT }}
+          path: enterprise
+          ref: ${{ env.GITHUB_BASE_REF_SLUG }}
 
-    - name: camptocamp
-      uses: actions/checkout@v2
-      with:
-        repository: camptocamp/odoo-cloud-platform
-        path: odoo-cloud-platform
-        ref: '14.0'
+      - name: Select Odoo modules to install
+        id: get_modules
+        run: |
+          curl https://raw.githubusercontent.com/iterativo-git/dockerdoo/${{ env.GITHUB_BASE_REF_SLUG }}/resources/getaddons.py -o getaddons.py
+          output=$(python -c "from getaddons import get_modules; print(','.join(get_modules('./${{ env.GITHUB_REPOSITORY_SLUG_URL }}', depth=3)))")
+          echo "::set-output name=modules::$output"
 
-    - name: OCA server-tools
-      uses: actions/checkout@v2
-      with:
-        repository: OCA/server-tools
-        path: server-tools
-        ref: '14.0'
+      ### Build the Docker image and Push it
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+        with:
+          driver-opts: network=host
 
-    - name: OCA connector
-      uses: actions/checkout@v2
-      with:
-        repository: OCA/connector
-        path: connector
-        ref: '14.0'
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: |
+            /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ env.GITHUB_HEAD_REF_SLUG }}-${{ env.GITHUB_SHA_SHORT }}
 
-    - name: OCA rest-framework
-      uses: actions/checkout@v2
-      with:
-        repository: OCA/rest-framework
-        path: rest-framework
-        ref: '14.0'
+      - name: Login to GAR
+        uses: docker/login-action@v1
+        with:
+          registry: us-docker.pkg.dev
+          username: _json_key
+          password: ${{ secrets.GAR_JSON_KEY }}
 
-    - name: OCA partner-contact
-      uses: actions/checkout@v2
-      with:
-        repository: OCA/partner-contact
-        path: partner-contact
-        ref: '14.0'
+      - name: Set env to integration
+        if: ${{ github.event.label.name == 'staging' }}
+        run: |
+          echo "ENV=integration" >> $GITHUB_ENV
 
-    - name: OCA web
-      uses: actions/checkout@v2
-      with:
-        repository: OCA/web
-        path: web
-        ref: '14.0'
+      - name: Build & push
+        id: docker_build
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./${{ env.GITHUB_REPOSITORY_SLUG_URL }}/Dockerfile
+          tags: ${{ env.GAR_BASE }}/${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG }}:${{ env.GITHUB_HEAD_REF_SLUG }}
+          build-args: |
+            RUNNING_ENV=${{ env.ENV }}
+            EXTRA_MODULES=${{ steps.get_modules.outputs.modules }},${{ env.REQUIRED_MODULES }}
+            IMAGE_LOCATION=${{ env.IMAGE_LOCATION }}
+            ODOO_VERSION=${{ env.GITHUB_BASE_REF_SLUG }}
+            PGHOST=${{ secrets.DB_PORT_5432_TCP_ADDR }}
+            PGUSER=${{ secrets.DB_ENV_POSTGRES_USER }}
+            PGPORT=${{ secrets.DB_PORT_5432_TCP_PORT }}
+            PGPASSWORD=${{ secrets.DB_ENV_POSTGRES_PASSWORD }}
+            ODOO_SESSION_REDIS=${{ secrets.ODOO_SESSION_REDIS }}
+            ODOO_SESSION_REDIS_HOST=${{ secrets.ODOO_SESSION_REDIS_HOST }}
+            ODOO_SESSION_REDIS_PREFIX=${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG_URL }}-odoo-${{ env.ENV }}
+            ODOO_LOGGING_JSON=${{ secrets.ODOO_LOGGING_JSON }}
+            AWS_HOST=${{ secrets.AWS_HOST }}
+            AWS_REGION=${{ secrets.AWS_REGION }}
+            AWS_ACCESS_KEY_ID=${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY=${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            AWS_BUCKETNAME=${{ secrets.AWS_BUCKETNAME }}
+            AWS_BUCKETNAME_UNSTRUCTURED=true
+            DBNAME=${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG_URL }}-${{ env.GITHUB_HEAD_REF_SLUG_URL }}.${{ secrets.ROOT_DOMAIN }}
+            SERVER_WIDE_MODULES=base,web,session_redis,logging_json,attachment_s3
+            DBFILTER=False
+          push: true
+          cache-from: type=registry,ref=${{ env.GAR_BASE }}/${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG }}:${{ env.GITHUB_HEAD_REF_SLUG }}
+          cache-to: type=inline
 
-    - name: OCA server-ux
-      uses: actions/checkout@v2
-      with:
-        repository: OCA/server-ux
-        path: server-ux
-        ref: '14.0'
+        # Download artifact with db name
+      - name: Download artifact with database name
+        if: ${{ github.event.label.name == 'staging' }}
+        uses: dawidd6/action-download-artifact@v2
+        with:
+          github_token: ${{secrets.GITHUB_TOKEN}}
+          workflow: staging.yaml
+          name: db_name-${{ env.GITHUB_HEAD_REF_SLUG }}
 
-    - name: OCA purchase-workflow
-      uses: actions/checkout@v2
-      with:
-        repository: OCA/purchase-workflow
-        path: purchase-workflow
-        ref: '14.0'
+      - name: Set env with database name
+        if: ${{ github.event.label.name == 'staging' }}
+        run: echo "Setting database env variable..."
+        env:
+          DB_NAME: $(cat db_name.txt)
 
-    - name: OCA wms
-      uses: actions/checkout@v2
-      with:
-        repository: OCA/wms
-        path: wms
-        ref: '14.0'
+      ### Set up Kustomize and build it
+      - name: K8s Template
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ env.GITHUB_REPOSITORY_OWNER_PART_SLUG }}/odoo-kubernetes-infra
+          path: gke-dev-cluster
+          token: ${{ secrets.ACTIONS_PAT }}
+          ref: main
 
-    - name: OCA stock-logistics-workflow
-      uses: actions/checkout@v2
-      with:
-        repository: OCA/stock-logistics-workflow
-        path: stock-logistics-workflow
-        ref: '14.0'
+      - uses: imranismail/setup-kustomize@v1
+        with:
+          kustomize-version: "3.1.0"
+      - run: kustomize build gke-dev-cluster/deployments/odoo/${{ env.ENV }} -o deployment.yaml.tmpl
 
-    - name: Odoo Dominicana l10n-dominicana
-      uses: actions/checkout@v2
-      with:
-        repository: odoo-dominicana/l10n-dominicana
-        path: l10n-dominicana
-        ref: '14.0'
+      - name: Render Deployment YAML
+        uses: nowactions/envsubst@v1
+        with:
+          input: ./deployment.yaml.tmpl
+          output: ./deployment.yaml
+        env:
+          ENV: ${{ env.ENV }}
+          GKE_LOCATION: ${{ secrets.GKE_ZONE }}
+          # Modules to Install
+          EXTRA_MODULES: ${{ steps.get_modules.outputs.modules }},${{ env.REQUIRED_MODULES }}
+          # Image to Deploy
+          PROJECT_ID: ${{ secrets.GKE_PROJECT }}
+          REPO_NAME: ${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG }}
+          BRANCH_NAME: ${{ env.GITHUB_HEAD_REF_SLUG }}
+          ODOO_VERSION: ${{ env.GITHUB_BASE_REF_SLUG }}
+          DEPLOY_IMAGE: ${{ env.GAR_BASE }}/${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG }}@${{ steps.docker_build.outputs.digest }}
+          # URL to acccess
+          REPO_URL: ${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG_URL }}
+          BRANCH_URL: ${{ env.GITHUB_HEAD_REF_SLUG_URL }}
+          SHORT_SHA: ${{ env.GITHUB_SHA_SHORT }}
+          STAGING_DB: ${{ env.DB_NAME }}
+          ODOO_VERSION_URL_SLUG: ${{ env.GITHUB_BASE_REF_SLUG_URL }}
+          DEPLOY_DOMAIN: ${{ secrets.DEPLOY_DOMAIN }}
 
-    - name: Odoo Enterprise
-      uses: actions/checkout@v2
-      with: 
-        repository: odoo/enterprise
-        token: ${{ secrets.ACTIONS_PAT }}
-        path: enterprise
-        ref: '14.0'
+      - uses: actions/upload-artifact@v2
+        with:
+          name: deployment-${{ env.GITHUB_HEAD_REF_SLUG }}
+          path: deployment.yaml
 
-    - name: Select Odoo modules to install & upload it
-      id: get_modules
-      run: |
-        curl https://raw.githubusercontent.com/iterativo-git/dockerdoo/14.0/resources/getaddons.py -o getaddons.py
-        output=$(python -c "from getaddons import get_modules; print(','.join(get_modules('$GITHUB_WORKSPACE/${{ env.GITHUB_REPOSITORY_SLUG_URL }}', depth=3)))")
-        echo "::set-output name=modules::$output"
-        sudo apt-get update && sudo apt-get install -y zip && zip -r modules.zip .
-
-    - name: Upload repository results
-      uses: actions/upload-artifact@v2
-      with:
-        name: modules
-        path: modules.zip
-        retention-days: 1
+      - name: Comment to trigger deploy
+        if: ${{ github.event.label.name == 'staging' }}
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          issue-number: ${{ github.event.number }}
+          token: ${{ secrets.ACTIONS_PAT }}
+          body: |
+            /deploy
+          reactions: hooray
 
   test:
     name: Test Modules
-    needs: ['dependencies']
+    needs: ["build"]
     runs-on: ubuntu-latest
-    container:
-      image: gcr.io/iterativo/dockerdoo:14.0
-      options: -t --user root
-      volumes:
-        - ${{ github.workspace }}:/workspace
+    if: ${{ github.event_name == 'pull_request' && github.event.label.name != 'staging' }}
 
     services:
       db:
-        image: postgres:11
+        image: postgres:12-alpine
         env:
           POSTGRES_DB: postgres
-          POSTGRES_USER: odoo
-          POSTGRES_PASSWORD: odoo
+          POSTGRES_USER: ${{ secrets.DB_ENV_POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.DB_ENV_POSTGRES_PASSWORD }}
         # needed because the postgres container does not provide a healthcheck
         options: >-
           --health-cmd pg_isready
@@ -169,26 +209,24 @@ jobs:
           - 5432:5432
 
     steps:
-    - name: Download modules results
-      uses: actions/download-artifact@v2
-      with:
-        name: modules
+      - uses: rlespinasse/github-slug-action@v3.x
 
-    - run: unzip modules.zip
+      - name: Login to GAR
+        uses: docker/login-action@v1
+        with:
+          registry: us-docker.pkg.dev
+          username: _json_key
+          password: ${{ secrets.GAR_JSON_KEY }}
 
-    - name: chown home for pypy
-      uses: docker://gcr.io/iterativo/dockerdoo:14.0
-      with:
-        args: sudo chown -R 1000:1000 /github/home
-
-    - name: Run odoo
-      uses: docker://gcr.io/iterativo/dockerdoo:14.0
-      with:
-        args: odoo
-      env:
-        RUN_TESTS: '1'
-        PIP_AUTO_INSTALL: '1'
-        LOG_LEVEL: test
-        WITHOUT_DEMO: 'False'
-        EXTRA_MODULES: ${{ needs.dependencies.outputs.get_modules }}
-        ODOO_EXTRA_ADDONS: /github/workspace
+      - name: Run Odoo tests
+        run: |
+          docker pull ${{ env.GAR_BASE }}/${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG }}:${{ env.GITHUB_HEAD_REF_SLUG }}
+          docker run -e RUN_TESTS -e LOG_LEVEL -e EXTRA_MODULES -e PGHOST --network="host" --name odoo -t ${{ env.GAR_BASE }}/${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG }}:${{ env.GITHUB_HEAD_REF_SLUG }}
+        env:
+          RUN_TESTS: "1"
+          LOG_LEVEL: test
+          EXTRA_MODULES: ${{ needs.build.outputs.get_modules }}
+          TEST_DB: ${{ env.GITHUB_REPOSITORY_NAME_PART_SLUG_URL }}-${{ env.GITHUB_HEAD_REF_SLUG_URL }}.${{ secrets.DEPLOY_DOMAIN }}
+          PGHOST: localhost
+          PGUSER: ${{ secrets.DB_ENV_POSTGRES_USER }}
+          PGPASSWORD: ${{ secrets.DB_ENV_POSTGRES_PASSWORD }}
