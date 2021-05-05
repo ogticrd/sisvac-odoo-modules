@@ -33,3 +33,4 @@ jobs:
         continue-on-error: true
         run: |
           kubectl delete -f deployment.yaml
+
